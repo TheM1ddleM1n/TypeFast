@@ -2,193 +2,292 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>TYPEFAST!</title>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>TYPEFAST</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{min-height:100vh;background:#0f0f0f;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Courier New',monospace;color:#fff}
-  #screen-menu,#screen-game,#screen-over{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-  .hidden{display:none!important}
-  button{font-family:'Courier New',monospace;cursor:pointer}
-  .btn-main{background:#fff;color:#000;border:none;padding:.85rem 2.5rem;font-size:1.1rem;font-weight:bold;letter-spacing:.1em}
-  .btn-sub{background:none;color:#555;border:none;padding:.75rem 2rem;font-size:.9rem}
-  .header{position:absolute;top:2rem;left:0;right:0;display:flex;justify-content:space-between;padding:0 2rem;font-size:.85rem;color:#555}
-  .header span{color:#fff;font-weight:bold}
-  .header .wpm{color:#a78bfa}
-  .header .streak-hot{color:#22c55e;font-weight:bold}
-  #timer-bar-wrap{width:320px;height:4px;background:#222;border-radius:2px;margin-bottom:3rem;overflow:hidden}
-  #timer-bar{height:100%;width:100%;background:#22c55e;border-radius:2px;transition:width 1s linear,background .5s}
-  #word-display{font-size:clamp(2rem,6vw,3.5rem);font-weight:bold;letter-spacing:.15em;min-height:4rem;display:flex;align-items:center;justify-content:center;margin-bottom:2.5rem;user-select:none}
-  #tick{font-size:3rem;display:none;animation:pop .4s ease}
-  #game-input{background:none;border:none;border-bottom:2px solid #444;color:#fff;font-size:1.4rem;font-family:'Courier New',monospace;text-align:center;width:300px;padding:.5rem;outline:none;letter-spacing:.1em}
-  .hint{margin-top:.75rem;color:#333;font-size:.8rem}
-  .big-score{font-size:4rem;font-weight:bold}
-  .wpm-display{font-size:1.4rem;color:#a78bfa;margin-bottom:.25rem}
-  .hs{color:#f59e0b;margin:.75rem 0;font-size:.9rem}
-  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-  @keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
-  .shake{animation:shake .4s}
+:root{--bg:#0f0f0f;--text:#fff;--accent:#22c55e;--accent2:#a78bfa;--warn:#f59e0b;--danger:#ef4444;--dim:#555;--surface:#1a1a1a;--key-bg:#2a2a2a;--key-text:#888}
+*{margin:0;padding:0;box-sizing:border-box}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:background .3s,color .3s}
+.screen{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+.hidden{display:none!important}
+button{font-family:'Courier New',monospace;cursor:pointer}
+.btn-main{background:var(--text);color:var(--bg);border:none;padding:.85rem 2.5rem;font-size:1.1rem;font-weight:bold;letter-spacing:.1em}
+.btn-sub{background:none;color:var(--dim);border:none;padding:.75rem 2rem;font-size:.9rem}
+/* themes */
+.themes{display:flex;gap:.6rem;margin-bottom:2rem}
+.theme-btn{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s}
+.theme-btn:hover{transform:scale(1.2)}
+.theme-btn.active{border-color:var(--text)}
+/* header */
+.hdr{position:absolute;top:2rem;left:0;right:0;display:flex;justify-content:space-between;padding:0 2rem;font-size:.85rem;color:var(--dim)}
+.hv{color:var(--text);font-weight:bold}
+/* timer */
+#timer-wrap{width:min(320px,80vw);height:4px;background:var(--surface);border-radius:2px;margin-bottom:3rem;overflow:hidden}
+#timer-bar{height:100%;width:100%;border-radius:2px;transition:width 1s linear,background .5s}
+/* word */
+#word-area{min-height:5rem;display:flex;align-items:center;justify-content:center;margin-bottom:2rem;position:relative}
+#word-letters{font-size:clamp(2rem,6vw,3.5rem);font-weight:bold;letter-spacing:.15em;user-select:none}
+#tick-el{font-size:3rem;display:none}
+/* input */
+#game-input{background:none;border:none;border-bottom:2px solid var(--dim);color:var(--text);font-size:1.4rem;font-family:'Courier New',monospace;text-align:center;width:min(300px,80vw);padding:.5rem;outline:none;letter-spacing:.1em}
+.hint{margin-top:.75rem;color:var(--dim);font-size:.8rem}
+/* keyboard */
+#keyboard{margin-top:1.5rem;display:flex;flex-direction:column;align-items:center;gap:5px}
+.kb-row{display:flex;gap:5px}
+.key{width:clamp(22px,3.2vw,34px);height:clamp(22px,3.2vw,34px);background:var(--key-bg);color:var(--key-text);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:clamp(.45rem,.75vw,.65rem);transition:background .12s,color .12s,transform .1s;border:1px solid #333}
+.key.ok{background:var(--accent)!important;color:#000!important;transform:scale(1.15)}
+.key.err{background:var(--danger)!important;color:#fff!important}
+/* countdown */
+#countdown{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100}
+#cdown-num{font-size:6rem;font-weight:bold;color:var(--accent)}
+/* particles */
+.pt{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:200;animation:burst .7s ease-out forwards}
+/* stats grid */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;width:min(320px,80vw)}
+.stat-box{background:var(--surface);padding:1rem;text-align:center;border-radius:4px}
+.stat-val{font-size:1.5rem;font-weight:bold;color:var(--accent)}
+.stat-lbl{font-size:.7rem;color:var(--dim);margin-top:.25rem;letter-spacing:.05em}
+/* anims */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+@keyframes burst{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
+@keyframes cdown{0%{transform:scale(1.6);opacity:0}20%{transform:scale(1);opacity:1}80%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}
+.shake{animation:shake .4s}
+.pop{animation:pop .4s ease}
+@media(max-width:600px){#keyboard{display:none}}
 </style>
 </head>
 <body>
 
+<!-- COUNTDOWN -->
+<div id="countdown" class="hidden">
+  <div id="cdown-num"></div>
+  <div style="font-size:1rem;color:var(--dim);margin-top:1rem;letter-spacing:.2em">GET READY</div>
+</div>
+
 <!-- MENU -->
-<div id="screen-menu">
+<div id="screen-menu" class="screen">
   <div style="font-size:3rem;font-weight:bold;letter-spacing:.15em;margin-bottom:.5rem">TYPEFAST</div>
-  <div style="color:#888;margin-bottom:3rem;font-size:.95rem">type the word before time runs out</div>
-  <div id="menu-hs" class="hidden" style="color:#f59e0b;margin-bottom:1.5rem;font-size:.9rem"></div>
-  <button class="btn-main" onclick="startGame()">PLAY</button>
-  <div style="margin-top:3rem;color:#444;font-size:.8rem;text-align:center;line-height:1.8">
+  <div style="color:var(--dim);margin-bottom:2rem;font-size:.95rem">type the word before time runs out</div>
+  <div class="themes">
+    <div class="theme-btn active" data-t="classic" style="background:#22c55e" title="Classic" onclick="setTheme('classic',this)"></div>
+    <div class="theme-btn" data-t="neon" style="background:#00ff88" title="Neon" onclick="setTheme('neon',this)"></div>
+    <div class="theme-btn" data-t="retro" style="background:#ff6600" title="Retro" onclick="setTheme('retro',this)"></div>
+    <div class="theme-btn" data-t="light" style="background:#7c3aed" title="Light" onclick="setTheme('light',this)"></div>
+  </div>
+  <div id="menu-hs" class="hidden" style="color:var(--warn);margin-bottom:1.5rem;font-size:.9rem"></div>
+  <button class="btn-main" onclick="runCountdown()">PLAY</button>
+  <div style="margin-top:3rem;color:var(--dim);font-size:.8rem;text-align:center;line-height:1.8">
     type the word shown · auto-submits when correct<br>words get harder as you score higher
   </div>
 </div>
 
 <!-- GAME -->
-<div id="screen-game" class="hidden">
-  <div class="header">
-    <div>score <span id="hdr-score">0</span></div>
-    <div class="wpm" id="hdr-wpm">—</div>
-    <div>streak <span id="hdr-streak">0</span></div>
+<div id="screen-game" class="screen hidden">
+  <div class="hdr">
+    <div>score <span class="hv" id="hdr-score">0</span></div>
+    <div style="color:var(--accent2)" id="hdr-wpm">—</div>
+    <div>streak <span class="hv" id="hdr-streak">0</span></div>
   </div>
-  <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
-  <div id="word-display">
+  <div id="timer-wrap"><div id="timer-bar"></div></div>
+  <div id="word-area">
     <div id="word-letters"></div>
-    <div id="tick">✅</div>
+    <div id="tick-el">✅</div>
   </div>
-  <input id="game-input" type="text" placeholder="type here..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="handleInput()" onkeydown="handleKey(event)"/>
+  <input id="game-input" type="text" placeholder="type here..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="onInput()" onkeydown="onKey(event)"/>
   <div class="hint">auto-submits when correct</div>
+  <div id="keyboard"></div>
 </div>
 
-<!-- GAME OVER -->
-<div id="screen-over" class="hidden">
-  <div style="font-size:1.5rem;color:#ef4444;margin-bottom:.5rem;letter-spacing:.1em">TIME'S UP</div>
-  <div class="big-score" id="over-score">0</div>
-  <div style="color:#888;margin-bottom:.75rem">words typed</div>
-  <div class="wpm-display"><span id="over-wpm">0</span> <span style="font-size:.9rem">WPM</span></div>
-  <div class="hs" id="over-hs"></div>
-  <button class="btn-main" onclick="startGame()" style="margin-top:1rem">PLAY AGAIN</button>
+<!-- OVER -->
+<div id="screen-over" class="screen hidden">
+  <div style="font-size:1.5rem;color:var(--danger);margin-bottom:.5rem;letter-spacing:.1em">TIME'S UP</div>
+  <div style="font-size:4rem;font-weight:bold" id="over-score">0</div>
+  <div style="color:var(--dim);margin-bottom:.5rem">words typed</div>
+  <div id="over-hs" style="color:var(--warn);font-size:.9rem;min-height:1.4rem;margin-bottom:.25rem"></div>
+  <div class="stat-grid">
+    <div class="stat-box"><div class="stat-val" id="st-wpm">0</div><div class="stat-lbl">WPM</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-acc">—</div><div class="stat-lbl">ACCURACY</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-fast">—</div><div class="stat-lbl">FASTEST WORD</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-long">—</div><div class="stat-lbl">LONGEST WORD</div></div>
+  </div>
+  <button class="btn-main" onclick="runCountdown()">PLAY AGAIN</button>
   <button class="btn-sub" onclick="showMenu()">menu</button>
 </div>
 
 <script>
-const WORDS = {
+// ── DATA ──────────────────────────────────────────────────────────────
+const W={
   easy:["cat","dog","run","big","sun","hat","red","cup","leg","map","box","pen","far","win","hot","old","new","ice","air","sky","sea","job","fun","key","bag","arm","ear","eye","lip","rib"],
-  medium:["apple","brave","chess","drive","eagle","flame","grace","happy","image","joker","kneel","lemon","magic","night","ocean","piano","queen","river","stone","tiger","under","voice","water","xenon","youth","zebra","blaze","cloud","dance","earth"],
-  hard:["balloon","cabinet","diamond","elegant","fashion","granite","harmony","inspire","jumping","kitchen","landing","morning","natural","opening","painted","quantum","rapidly","silence","theater","uniform","vibrant","weather","xylophone","younger","zealous","ancient","balance","captain","dolphin","emperor"],
-  expert:["accomplish","beautiful","celebrate","determine","elaborate","furniture","glamorous","highlight","important","journalist","knowledge","landscape","narrative","obsession","recognize","structure","temporary","universal","vulnerable","wonderful","extremely","breathing","certainly","chocolate","different","establish","fantastic"]
+  med:["apple","brave","chess","drive","eagle","flame","grace","happy","image","joker","kneel","lemon","magic","night","ocean","piano","queen","river","stone","tiger","under","voice","water","youth","zebra","blaze","cloud","dance","earth"],
+  hard:["balloon","cabinet","diamond","elegant","fashion","granite","harmony","inspire","jumping","kitchen","landing","morning","natural","opening","painted","quantum","rapidly","silence","theater","uniform","vibrant","weather","younger","ancient","balance","captain","dolphin","emperor"],
+  exp:["accomplish","beautiful","celebrate","determine","elaborate","furniture","glamorous","highlight","important","journalist","knowledge","landscape","narrative","obsession","recognize","structure","temporary","universal","vulnerable","wonderful","extremely","breathing","certainly","chocolate","different","establish","fantastic"]
 };
 
-let score=0, streak=0, highScore=0, word="", usedWords=[], maxTime=10, timerInterval=null, showTick=false, gameStart=0, totalChars=0, wpm=0;
+// ── THEMES ────────────────────────────────────────────────────────────
+const TH={
+  classic:{'--bg':'#0f0f0f','--text':'#ffffff','--accent':'#22c55e','--accent2':'#a78bfa','--warn':'#f59e0b','--danger':'#ef4444','--dim':'#555','--surface':'#1a1a1a','--key-bg':'#2a2a2a','--key-text':'#888'},
+  neon:{'--bg':'#05050f','--text':'#e0e0ff','--accent':'#00ff88','--accent2':'#ff00ff','--warn':'#ffdd00','--danger':'#ff3355','--dim':'#3344aa','--surface':'#0d0d20','--key-bg':'#0a0a1a','--key-text':'#3344aa'},
+  retro:{'--bg':'#1a0f00','--text':'#ffb347','--accent':'#ff6600','--accent2':'#ffdd00','--warn':'#ffaa00','--danger':'#ff2200','--dim':'#664422','--surface':'#2a1500','--key-bg':'#2a1500','--key-text':'#664422'},
+  light:{'--bg':'#f0f0f0','--text':'#111','--accent':'#16a34a','--accent2':'#7c3aed','--warn':'#d97706','--danger':'#dc2626','--dim':'#999','--surface':'#e0e0e0','--key-bg':'#d0d0d0','--key-text':'#aaa'}
+};
+function setTheme(name,btn){
+  const r=document.documentElement.style;
+  Object.entries(TH[name]).forEach(([k,v])=>r.setProperty(k,v));
+  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+setTheme('classic',document.querySelector('[data-t="classic"]'));
 
-function getPool(s){ return s<5?WORDS.easy:s<12?WORDS.medium:s<22?WORDS.hard:WORDS.expert; }
-function getTimeLimit(s,w){ return Math.max(8-Math.floor(s/5),3)+Math.floor(w.length/4); }
-function getWord(s){
-  const pool=getPool(s); let w,a=0;
-  do{ w=pool[Math.floor(Math.random()*pool.length)]; a++; } while(usedWords.includes(w)&&a<20);
-  return w;
+// ── KEYBOARD ──────────────────────────────────────────────────────────
+const ROWS=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']];
+(function buildKb(){
+  const kb=document.getElementById('keyboard');
+  ROWS.forEach(row=>{
+    const r=document.createElement('div'); r.className='kb-row';
+    row.forEach(k=>{const el=document.createElement('div');el.className='key';el.textContent=k;el.id='k'+k;r.appendChild(el);});
+    kb.appendChild(r);
+  });
+})();
+function flashKey(ch,ok){
+  const el=document.getElementById('k'+ch.toUpperCase());
+  if(!el)return;
+  el.classList.add(ok?'ok':'err');
+  setTimeout(()=>el.classList.remove('ok','err'),280);
 }
 
-function show(id){ document.getElementById(id).classList.remove('hidden'); }
-function hide(id){ document.getElementById(id).classList.add('hidden'); }
-function showMenu(){ hide('screen-game'); hide('screen-over'); show('screen-menu'); if(highScore>0){const el=document.getElementById('menu-hs');el.textContent='🏆 Best: '+highScore;el.classList.remove('hidden');} }
+// ── STATE ─────────────────────────────────────────────────────────────
+let score=0,streak=0,hs=0,word='',used=[],maxT=10,tim=null,ticking=false;
+let gStart=0,totChars=0,wpm=0,keysTotal=0,keysCorrect=0,wordTimes=[],wStart=0,lastLen=0;
 
+function pool(s){return s<5?W.easy:s<12?W.med:s<22?W.hard:W.exp;}
+function timeFor(s,w){return Math.max(8-Math.floor(s/5),3)+Math.floor(w.length/4);}
+function pickWord(s){let w,a=0;const p=pool(s);do{w=p[Math.floor(Math.random()*p.length)];a++;}while(used.includes(w)&&a<20);return w;}
+
+function $id(id){return document.getElementById(id);}
+function show(id){$id(id).classList.remove('hidden');}
+function hide(id){$id(id).classList.add('hidden');}
+function showMenu(){hide('screen-game');hide('screen-over');show('screen-menu');if(hs>0){$id('menu-hs').textContent='🏆 Best: '+hs;$id('menu-hs').classList.remove('hidden');}}
+
+// ── COUNTDOWN ─────────────────────────────────────────────────────────
+function runCountdown(){
+  hide('screen-menu');hide('screen-over');hide('screen-game');
+  const cd=$id('countdown'),num=$id('cdown-num');
+  cd.classList.remove('hidden');
+  const steps=['3','2','1','GO!'];
+  let i=0;
+  (function step(){
+    num.textContent=steps[i];
+    num.style.animation='none'; void num.offsetWidth; num.style.animation='cdown 1s ease forwards';
+    i++;
+    if(i<steps.length) setTimeout(step,900);
+    else setTimeout(()=>{cd.classList.add('hidden');startGame();},700);
+  })();
+}
+
+// ── GAME ──────────────────────────────────────────────────────────────
 function startGame(){
-  score=0; streak=0; usedWords=[]; totalChars=0; wpm=0; showTick=false;
-  hide('screen-menu'); hide('screen-over'); show('screen-game');
-  updateHeader();
-  word=getWord(0); usedWords.push(word); totalChars+=word.length;
-  const t=getTimeLimit(0,word);
-  maxTime=t;
-  gameStart=Date.now();
-  renderWord(); resetInput(); startTimer(t);
-  setTimeout(()=>document.getElementById('game-input').focus(),50);
+  score=0;streak=0;used=[];totChars=0;wpm=0;keysTotal=0;keysCorrect=0;wordTimes=[];lastLen=0;ticking=false;
+  show('screen-game'); updateHdr();
+  word=pickWord(0); used.push(word);
+  const t=timeFor(0,word); maxT=t;
+  gStart=Date.now(); wStart=Date.now();
+  renderWord(); resetInp(); startTimer(t);
+  setTimeout(()=>$id('game-input').focus(),50);
 }
 
 function renderWord(){
-  const inp=document.getElementById('game-input').value;
-  const el=document.getElementById('word-letters');
-  el.innerHTML=word.split('').map((ch,i)=>{
-    const typed=inp[i];
-    const col=!typed?'#fff':typed.toLowerCase()===ch.toLowerCase()?'#22c55e':'#ef4444';
-    return `<span style="color:${col};transition:color .1s">${ch.toUpperCase()}</span>`;
+  const v=$id('game-input').value;
+  $id('word-letters').innerHTML=word.split('').map((ch,i)=>{
+    const tp=v[i];
+    const c=!tp?'var(--text)':tp.toLowerCase()===ch.toLowerCase()?'var(--accent)':'var(--danger)';
+    return `<span style="color:${c};transition:color .1s">${ch.toUpperCase()}</span>`;
   }).join('');
 }
 
-function resetInput(){ const el=document.getElementById('game-input'); el.value=''; el.style.opacity='1'; el.disabled=false; }
+function resetInp(){const el=$id('game-input');el.value='';el.style.opacity='1';el.disabled=false;lastLen=0;}
 
 function startTimer(t){
-  clearInterval(timerInterval);
-  let left=t;
-  updateBar(left,t);
-  timerInterval=setInterval(()=>{
-    left--;
-    updateBar(left,maxTime);
-    if(left<=0){ clearInterval(timerInterval); endGame(); }
-  },1000);
+  clearInterval(tim); let left=t; updateBar(left,t);
+  tim=setInterval(()=>{left--;updateBar(left,maxT);if(left<=0){clearInterval(tim);endGame();}},1000);
 }
 
-function updateBar(left,max){
-  const pct=left/max;
-  const bar=document.getElementById('timer-bar');
-  bar.style.width=(pct*100)+'%';
-  bar.style.background=pct>.5?'#22c55e':pct>.25?'#f59e0b':'#ef4444';
+function updateBar(l,m){
+  const p=l/m;
+  const bar=$id('timer-bar');
+  bar.style.width=(p*100)+'%';
+  bar.style.background=p>.5?'var(--accent)':p>.25?'var(--warn)':'var(--danger)';
 }
 
-function updateHeader(){
-  document.getElementById('hdr-score').textContent=score;
-  const st=document.getElementById('hdr-streak');
-  st.textContent=streak;
-  st.style.color=streak>=3?'#22c55e':'#fff';
-  document.getElementById('hdr-wpm').textContent=wpm>0?wpm+' WPM':'—';
+function updateHdr(){
+  $id('hdr-score').textContent=score;
+  const s=$id('hdr-streak'); s.textContent=streak; s.style.color=streak>=3?'var(--accent)':'var(--text)';
+  $id('hdr-wpm').textContent=wpm>0?wpm+' WPM':'—';
 }
 
-function handleInput(){
-  if(showTick) return;
+function onInput(){
+  if(ticking)return;
+  const el=$id('game-input'),v=el.value;
+  if(v.length>lastLen){
+    const ch=v[v.length-1],ex=word[v.length-1];
+    const ok=ch&&ex&&ch.toLowerCase()===ex.toLowerCase();
+    flashKey(ch,ok);
+    keysTotal+=(v.length-lastLen);
+  }
+  lastLen=v.length;
   renderWord();
-  const inp=document.getElementById('game-input').value;
-  if(inp.toLowerCase()===word.toLowerCase()){
-    clearInterval(timerInterval);
+  if(v.toLowerCase()===word.toLowerCase()){
+    clearInterval(tim);
+    wordTimes.push({word,ms:Date.now()-wStart});
+    keysCorrect+=word.length; totChars+=word.length;
     score++; streak++;
-    if(score>highScore) highScore=score;
-    const mins=(Date.now()-gameStart)/60000;
-    wpm=Math.round((totalChars/5)/mins);
-    updateHeader();
-    showTick=true;
-    document.getElementById('game-input').disabled=true;
-    document.getElementById('game-input').style.opacity='0';
-    document.getElementById('word-letters').style.display='none';
-    document.getElementById('tick').style.display='block';
+    if(score>hs) hs=score;
+    wpm=Math.round((totChars/5)/((Date.now()-gStart)/60000));
+    updateHdr(); doBurst(); ticking=true;
+    el.disabled=true; el.style.opacity='0';
+    $id('word-letters').style.visibility='hidden';
+    const tk=$id('tick-el'); tk.style.display='block'; tk.style.animation='none'; void tk.offsetWidth; tk.style.animation='pop .4s ease';
     setTimeout(()=>{
-      document.getElementById('tick').style.display='none';
-      document.getElementById('word-letters').style.display='flex';
-      showTick=false;
-      word=getWord(score); usedWords.push(word); totalChars+=word.length;
-      const t=getTimeLimit(score,word); maxTime=t;
-      resetInput(); renderWord(); startTimer(t);
-      setTimeout(()=>document.getElementById('game-input').focus(),30);
+      tk.style.display='none'; $id('word-letters').style.visibility='visible'; ticking=false;
+      word=pickWord(score); used.push(word);
+      const t=timeFor(score,word); maxT=t;
+      resetInp(); renderWord(); startTimer(t); wStart=Date.now();
+      setTimeout(()=>$id('game-input').focus(),30);
     },500);
   }
 }
 
-function handleKey(e){
-  if(e.key==='Enter'&&!showTick&&document.getElementById('game-input').value.trim()){
-    const wd=document.getElementById('word-letters');
-    wd.classList.add('shake');
-    setTimeout(()=>wd.classList.remove('shake'),400);
-    document.getElementById('game-input').value='';
-    renderWord();
+function onKey(e){
+  if(e.key==='Enter'&&!ticking&&$id('game-input').value.trim()){
+    const wl=$id('word-letters'); wl.classList.add('shake'); setTimeout(()=>wl.classList.remove('shake'),400);
+    $id('game-input').value=''; lastLen=0; renderWord();
   }
 }
 
+// ── PARTICLES ─────────────────────────────────────────────────────────
+function doBurst(){
+  const r=$id('word-area').getBoundingClientRect();
+  const cx=r.left+r.width/2, cy=r.top+r.height/2;
+  const cols=['var(--accent)','var(--accent2)','var(--warn)'];
+  for(let i=0;i<18;i++){
+    const p=document.createElement('div'); p.className='pt';
+    const a=(i/18)*360, d=50+Math.random()*55;
+    const dx=Math.cos(a*Math.PI/180)*d, dy=Math.sin(a*Math.PI/180)*d;
+    p.style.cssText=`left:${cx}px;top:${cy}px;background:${cols[i%3]};--dx:${dx}px;--dy:${dy}px`;
+    document.body.appendChild(p); setTimeout(()=>p.remove(),700);
+  }
+}
+
+// ── END ───────────────────────────────────────────────────────────────
 function endGame(){
-  hide('screen-game');
-  show('screen-over');
-  document.getElementById('over-score').textContent=score;
-  document.getElementById('over-wpm').textContent=wpm;
-  const hs=document.getElementById('over-hs');
-  if(score>0&&score>=highScore){ hs.textContent='🏆 New High Score!'; }
-  else if(highScore>0){ hs.textContent='Best: '+highScore; }
-  else { hs.textContent=''; }
+  hide('screen-game'); show('screen-over');
+  $id('over-score').textContent=score;
+  $id('over-hs').textContent=score>0&&score>=hs?'🏆 New High Score!':hs>0?'Best: '+hs:'';
+  $id('st-wpm').textContent=wpm||0;
+  $id('st-acc').textContent=keysTotal>0?Math.round(keysCorrect/keysTotal*100)+'%':'—';
+  const comp=used.slice(0,-1);
+  $id('st-fast').textContent=wordTimes.length?wordTimes.reduce((a,b)=>a.ms<b.ms?a:b).word:'—';
+  $id('st-long').textContent=comp.length?comp.reduce((a,b)=>a.length>=b.length?a:b,''):'—';
 }
 </script>
 </body>
