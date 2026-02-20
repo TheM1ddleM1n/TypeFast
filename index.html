@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>TYPEFAST</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{min-height:100vh;background:#0f0f0f;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:'Courier New',monospace;color:#fff}
+  #screen-menu,#screen-game,#screen-over{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .hidden{display:none!important}
+  button{font-family:'Courier New',monospace;cursor:pointer}
+  .btn-main{background:#fff;color:#000;border:none;padding:.85rem 2.5rem;font-size:1.1rem;font-weight:bold;letter-spacing:.1em}
+  .btn-sub{background:none;color:#555;border:none;padding:.75rem 2rem;font-size:.9rem}
+  .header{position:absolute;top:2rem;left:0;right:0;display:flex;justify-content:space-between;padding:0 2rem;font-size:.85rem;color:#555}
+  .header span{color:#fff;font-weight:bold}
+  .header .wpm{color:#a78bfa}
+  .header .streak-hot{color:#22c55e;font-weight:bold}
+  #timer-bar-wrap{width:320px;height:4px;background:#222;border-radius:2px;margin-bottom:3rem;overflow:hidden}
+  #timer-bar{height:100%;width:100%;background:#22c55e;border-radius:2px;transition:width 1s linear,background .5s}
+  #word-display{font-size:clamp(2rem,6vw,3.5rem);font-weight:bold;letter-spacing:.15em;min-height:4rem;display:flex;align-items:center;justify-content:center;margin-bottom:2.5rem;user-select:none}
+  #tick{font-size:3rem;display:none;animation:pop .4s ease}
+  #game-input{background:none;border:none;border-bottom:2px solid #444;color:#fff;font-size:1.4rem;font-family:'Courier New',monospace;text-align:center;width:300px;padding:.5rem;outline:none;letter-spacing:.1em}
+  .hint{margin-top:.75rem;color:#333;font-size:.8rem}
+  .big-score{font-size:4rem;font-weight:bold}
+  .wpm-display{font-size:1.4rem;color:#a78bfa;margin-bottom:.25rem}
+  .hs{color:#f59e0b;margin:.75rem 0;font-size:.9rem}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+  @keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+  .shake{animation:shake .4s}
+</style>
+</head>
+<body>
+
+<!-- MENU -->
+<div id="screen-menu">
+  <div style="font-size:3rem;font-weight:bold;letter-spacing:.15em;margin-bottom:.5rem">TYPEFAST</div>
+  <div style="color:#888;margin-bottom:3rem;font-size:.95rem">type the word before time runs out</div>
+  <div id="menu-hs" class="hidden" style="color:#f59e0b;margin-bottom:1.5rem;font-size:.9rem"></div>
+  <button class="btn-main" onclick="startGame()">PLAY</button>
+  <div style="margin-top:3rem;color:#444;font-size:.8rem;text-align:center;line-height:1.8">
+    type the word shown · auto-submits when correct<br>words get harder as you score higher
+  </div>
+</div>
+
+<!-- GAME -->
+<div id="screen-game" class="hidden">
+  <div class="header">
+    <div>score <span id="hdr-score">0</span></div>
+    <div class="wpm" id="hdr-wpm">—</div>
+    <div>streak <span id="hdr-streak">0</span></div>
+  </div>
+  <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+  <div id="word-display">
+    <div id="word-letters"></div>
+    <div id="tick">✅</div>
+  </div>
+  <input id="game-input" type="text" placeholder="type here..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="handleInput()" onkeydown="handleKey(event)"/>
+  <div class="hint">auto-submits when correct</div>
+</div>
+
+<!-- GAME OVER -->
+<div id="screen-over" class="hidden">
+  <div style="font-size:1.5rem;color:#ef4444;margin-bottom:.5rem;letter-spacing:.1em">TIME'S UP</div>
+  <div class="big-score" id="over-score">0</div>
+  <div style="color:#888;margin-bottom:.75rem">words typed</div>
+  <div class="wpm-display"><span id="over-wpm">0</span> <span style="font-size:.9rem">WPM</span></div>
+  <div class="hs" id="over-hs"></div>
+  <button class="btn-main" onclick="startGame()" style="margin-top:1rem">PLAY AGAIN</button>
+  <button class="btn-sub" onclick="showMenu()">menu</button>
+</div>
+
+<script>
+const WORDS = {
+  easy:["cat","dog","run","big","sun","hat","red","cup","leg","map","box","pen","far","win","hot","old","new","ice","air","sky","sea","job","fun","key","bag","arm","ear","eye","lip","rib"],
+  medium:["apple","brave","chess","drive","eagle","flame","grace","happy","image","joker","kneel","lemon","magic","night","ocean","piano","queen","river","stone","tiger","under","voice","water","xenon","youth","zebra","blaze","cloud","dance","earth"],
+  hard:["balloon","cabinet","diamond","elegant","fashion","granite","harmony","inspire","jumping","kitchen","landing","morning","natural","opening","painted","quantum","rapidly","silence","theater","uniform","vibrant","weather","xylophone","younger","zealous","ancient","balance","captain","dolphin","emperor"],
+  expert:["accomplish","beautiful","celebrate","determine","elaborate","furniture","glamorous","highlight","important","journalist","knowledge","landscape","narrative","obsession","recognize","structure","temporary","universal","vulnerable","wonderful","extremely","breathing","certainly","chocolate","different","establish","fantastic"]
+};
+
+let score=0, streak=0, highScore=0, word="", usedWords=[], maxTime=10, timerInterval=null, showTick=false, gameStart=0, totalChars=0, wpm=0;
+
+function getPool(s){ return s<5?WORDS.easy:s<12?WORDS.medium:s<22?WORDS.hard:WORDS.expert; }
+function getTimeLimit(s,w){ return Math.max(8-Math.floor(s/5),3)+Math.floor(w.length/4); }
+function getWord(s){
+  const pool=getPool(s); let w,a=0;
+  do{ w=pool[Math.floor(Math.random()*pool.length)]; a++; } while(usedWords.includes(w)&&a<20);
+  return w;
+}
+
+function show(id){ document.getElementById(id).classList.remove('hidden'); }
+function hide(id){ document.getElementById(id).classList.add('hidden'); }
+function showMenu(){ hide('screen-game'); hide('screen-over'); show('screen-menu'); if(highScore>0){const el=document.getElementById('menu-hs');el.textContent='🏆 Best: '+highScore;el.classList.remove('hidden');} }
+
+function startGame(){
+  score=0; streak=0; usedWords=[]; totalChars=0; wpm=0; showTick=false;
+  hide('screen-menu'); hide('screen-over'); show('screen-game');
+  updateHeader();
+  word=getWord(0); usedWords.push(word); totalChars+=word.length;
+  const t=getTimeLimit(0,word);
+  maxTime=t;
+  gameStart=Date.now();
+  renderWord(); resetInput(); startTimer(t);
+  setTimeout(()=>document.getElementById('game-input').focus(),50);
+}
+
+function renderWord(){
+  const inp=document.getElementById('game-input').value;
+  const el=document.getElementById('word-letters');
+  el.innerHTML=word.split('').map((ch,i)=>{
+    const typed=inp[i];
+    const col=!typed?'#fff':typed.toLowerCase()===ch.toLowerCase()?'#22c55e':'#ef4444';
+    return `<span style="color:${col};transition:color .1s">${ch.toUpperCase()}</span>`;
+  }).join('');
+}
+
+function resetInput(){ const el=document.getElementById('game-input'); el.value=''; el.style.opacity='1'; el.disabled=false; }
+
+function startTimer(t){
+  clearInterval(timerInterval);
+  let left=t;
+  updateBar(left,t);
+  timerInterval=setInterval(()=>{
+    left--;
+    updateBar(left,maxTime);
+    if(left<=0){ clearInterval(timerInterval); endGame(); }
+  },1000);
+}
+
+function updateBar(left,max){
+  const pct=left/max;
+  const bar=document.getElementById('timer-bar');
+  bar.style.width=(pct*100)+'%';
+  bar.style.background=pct>.5?'#22c55e':pct>.25?'#f59e0b':'#ef4444';
+}
+
+function updateHeader(){
+  document.getElementById('hdr-score').textContent=score;
+  const st=document.getElementById('hdr-streak');
+  st.textContent=streak;
+  st.style.color=streak>=3?'#22c55e':'#fff';
+  document.getElementById('hdr-wpm').textContent=wpm>0?wpm+' WPM':'—';
+}
+
+function handleInput(){
+  if(showTick) return;
+  renderWord();
+  const inp=document.getElementById('game-input').value;
+  if(inp.toLowerCase()===word.toLowerCase()){
+    clearInterval(timerInterval);
+    score++; streak++;
+    if(score>highScore) highScore=score;
+    const mins=(Date.now()-gameStart)/60000;
+    wpm=Math.round((totalChars/5)/mins);
+    updateHeader();
+    showTick=true;
+    document.getElementById('game-input').disabled=true;
+    document.getElementById('game-input').style.opacity='0';
+    document.getElementById('word-letters').style.display='none';
+    document.getElementById('tick').style.display='block';
+    setTimeout(()=>{
+      document.getElementById('tick').style.display='none';
+      document.getElementById('word-letters').style.display='flex';
+      showTick=false;
+      word=getWord(score); usedWords.push(word); totalChars+=word.length;
+      const t=getTimeLimit(score,word); maxTime=t;
+      resetInput(); renderWord(); startTimer(t);
+      setTimeout(()=>document.getElementById('game-input').focus(),30);
+    },500);
+  }
+}
+
+function handleKey(e){
+  if(e.key==='Enter'&&!showTick&&document.getElementById('game-input').value.trim()){
+    const wd=document.getElementById('word-letters');
+    wd.classList.add('shake');
+    setTimeout(()=>wd.classList.remove('shake'),400);
+    document.getElementById('game-input').value='';
+    renderWord();
+  }
+}
+
+function endGame(){
+  hide('screen-game');
+  show('screen-over');
+  document.getElementById('over-score').textContent=score;
+  document.getElementById('over-wpm').textContent=wpm;
+  const hs=document.getElementById('over-hs');
+  if(score>0&&score>=highScore){ hs.textContent='🏆 New High Score!'; }
+  else if(highScore>0){ hs.textContent='Best: '+highScore; }
+  else { hs.textContent=''; }
+}
+</script>
+</body>
+</html>
