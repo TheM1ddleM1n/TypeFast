@@ -9,7 +9,7 @@ A fast-paced word typing game. A word appears on screen — type it correctly be
 - Beat your high score and improve your WPM!
 
 ## Play Online
-🔗 [Play here](https://YOUR_USERNAME.github.io/typefast)
+🔗 [Play here](https://them1ddlem1n.github.io/TypeFast/)
 
 ## Built With
 HTML · CSS · JavaScript
