@@ -3,7 +3,7 @@
 
 A high-octane, minimalist typing challenge where speed and accuracy are your only lifelines. 
 
-[**🚀 PLAY NOW**]([https://them1ddlem1n.github.io](https://them1ddlem1n.github.io/TypeFast/))
+[**🚀 PLAY NOW**](https://them1ddlem1n.github.io/TypeFast/)
 
 ---
 
