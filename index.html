@@ -5,67 +5,127 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
 <title>TYPEFAST</title>
 <style>
-:root{--bg:#0f0f0f;--text:#fff;--accent:#22c55e;--accent2:#a78bfa;--warn:#f59e0b;--danger:#ef4444;--dim:#555;--surface:#1a1a1a;--key-bg:#2a2a2a;--key-text:#888}
+:root{
+  --bg:#0f0f0f;--text:#fff;--accent:#facc15;--accent2:#a78bfa;
+  --warn:#f97316;--danger:#ef4444;--dim:#555;--surface:#1c1c1c;
+  --correct:#22c55e;--key-bg:#2a2a2a;--key-text:#666
+}
 *{margin:0;padding:0;box-sizing:border-box}
-body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Courier New',monospace;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden;transition:background .3s,color .3s}
-.screen{width:100%;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1rem}
+body{min-height:100vh;background:var(--bg);color:var(--text);font-family:'Courier New',monospace;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+.screen{width:100%;min-height:100vh;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;padding:1.5rem}
 .hidden{display:none!important}
 button{font-family:'Courier New',monospace;cursor:pointer}
-.btn-main{background:var(--text);color:var(--bg);border:none;padding:.85rem 2.5rem;font-size:1.1rem;font-weight:bold;letter-spacing:.1em}
-.btn-sub{background:none;color:var(--dim);border:none;padding:.75rem 2rem;font-size:.9rem}
-.themes{display:flex;gap:.6rem;margin-bottom:2rem}
-.theme-btn{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .2s}
-.theme-btn:hover{transform:scale(1.2)}
-.theme-btn.active{border-color:var(--text)}
-.hdr{position:absolute;top:2rem;left:0;right:0;display:flex;justify-content:space-between;padding:0 1.5rem;font-size:.82rem;color:var(--dim)}
-.hv{color:var(--text);font-weight:bold}
-/* timer */
-#timer-wrap{width:min(320px,80vw);height:4px;background:var(--surface);border-radius:2px;margin-bottom:3rem;overflow:visible;position:relative}
-#timer-bar{height:100%;width:100%;border-radius:2px;transition:width 1s linear,background .5s}
-#timer-wrap.pulse{animation:tpulse .5s ease infinite}
-/* combo badge */
-#combo-badge{position:absolute;top:4.5rem;left:50%;transform:translateX(-50%);font-size:.75rem;letter-spacing:.1em;padding:.2rem .7rem;border-radius:20px;font-weight:bold;transition:opacity .3s,transform .3s;opacity:0}
-#combo-badge.show{opacity:1;transform:translateX(-50%) scale(1)}
-#combo-badge.x2{background:#f59e0b;color:#000}
-#combo-badge.x3{background:#ef4444;color:#fff;animation:combopulse .6s ease infinite}
-/* word */
-#word-area{min-height:5.5rem;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:2rem;position:relative}
-#boss-label{font-size:.65rem;letter-spacing:.2em;color:var(--danger);margin-bottom:.4rem;opacity:0;transition:opacity .3s}
-#boss-label.show{opacity:1}
-#word-letters{font-size:clamp(1.6rem,5vw,3rem);font-weight:bold;letter-spacing:.15em;user-select:none}
-#tick-el{font-size:3rem;display:none}
-/* input */
-#game-input{background:none;border:none;border-bottom:2px solid var(--dim);color:var(--text);font-size:1.4rem;font-family:'Courier New',monospace;text-align:center;width:min(300px,80vw);padding:.5rem;outline:none;letter-spacing:.1em}
-.hint{margin-top:.75rem;color:var(--dim);font-size:.8rem}
-/* score pop */
-.score-pop{position:fixed;font-size:1.4rem;font-weight:bold;pointer-events:none;z-index:300;animation:scorefloat .8s ease-out forwards}
-/* keyboard */
-#keyboard{margin-top:1.5rem;display:flex;flex-direction:column;align-items:center;gap:5px}
+.btn-main{background:var(--accent);color:#000;border:none;padding:.9rem 3rem;
+  font-size:1.1rem;font-weight:900;letter-spacing:.12em;border-radius:4px;transition:transform .1s,opacity .1s}
+.btn-main:hover{opacity:.9;transform:scale(1.03)}
+.btn-sub{background:none;color:var(--dim);border:none;padding:.75rem 2rem;font-size:.9rem;margin-top:.3rem}
+
+/* ── MENU ── */
+#logo{font-size:3.5rem;font-weight:900;letter-spacing:.15em;color:var(--accent);text-shadow:0 0 30px rgba(250,204,21,.3)}
+#tagline{color:var(--dim);margin:.4rem 0 2.5rem;font-size:.9rem;letter-spacing:.08em}
+#menu-hs{color:var(--accent);font-size:.9rem;margin-bottom:1.2rem;letter-spacing:.05em;min-height:1.2rem}
+.menu-info{margin-top:2.5rem;color:var(--dim);font-size:.78rem;text-align:center;line-height:2;letter-spacing:.03em}
+
+/* ── HUD ── */
+.hdr{position:absolute;top:1.6rem;left:0;right:0;display:flex;justify-content:space-between;
+  align-items:center;padding:0 1.8rem;font-size:.82rem;color:var(--dim)}
+.hv{color:var(--text);font-weight:bold;font-size:.95rem}
+#hdr-streak-wrap{display:flex;align-items:center;gap:.3rem}
+#fire-icons{letter-spacing:-.05em}
+
+/* ── TIMER ── */
+#timer-wrap{width:min(380px,82vw);height:5px;background:var(--surface);
+  border-radius:3px;margin-bottom:3.5rem;position:relative;overflow:visible}
+#timer-bar{height:100%;width:100%;border-radius:3px;transition:width 1s linear,background .4s}
+#timer-wrap.pulse{animation:tpulse .45s ease infinite}
+
+/* ── STREAK BADGE ── */
+#combo-badge{position:absolute;top:5rem;left:50%;transform:translateX(-50%);
+  font-size:.72rem;letter-spacing:.12em;padding:.25rem .8rem;border-radius:20px;
+  font-weight:900;transition:opacity .3s;opacity:0;pointer-events:none}
+#combo-badge.show{opacity:1}
+#combo-badge.x2{background:var(--warn);color:#000}
+#combo-badge.x3{background:var(--danger);color:#fff;animation:combopulse .55s ease infinite}
+
+/* ── WORD AREA ── */
+#word-area{min-height:7rem;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;margin-bottom:2rem;position:relative}
+#word-letters{font-size:clamp(2rem,6vw,3.8rem);font-weight:900;letter-spacing:.18em;
+  user-select:none;transition:opacity .15s}
+
+/* ── PER-WORD WPM FLASH ── */
+#wpm-flash{position:absolute;top:-2.8rem;left:50%;transform:translateX(-50%);
+  font-size:1.6rem;font-weight:900;color:var(--accent);letter-spacing:.05em;
+  pointer-events:none;opacity:0;white-space:nowrap}
+#wpm-flash.pop{animation:wpmPop .9s ease-out forwards}
+
+/* ── INPUT ── */
+#game-input{background:none;border:none;border-bottom:2px solid #333;
+  color:var(--text);font-size:1.5rem;font-family:'Courier New',monospace;
+  text-align:center;width:min(320px,82vw);padding:.5rem;outline:none;
+  letter-spacing:.12em;transition:border-color .2s}
+#game-input:focus{border-color:var(--accent)}
+#game-input.err-shake{animation:shake .35s ease;border-color:var(--danger)!important}
+.hint{margin-top:.8rem;color:var(--dim);font-size:.75rem;letter-spacing:.04em}
+
+/* ── LIVE WPM STRIP (shows current word speed) ── */
+#live-wpm{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
+  font-size:.78rem;color:var(--dim);letter-spacing:.05em;white-space:nowrap}
+
+/* ── TICK ── */
+#tick-el{font-size:3.2rem;display:none}
+
+/* ── ELIMINATED BANNER ── */
+#elim-banner{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
+#elim-banner.show{opacity:1;pointer-events:all}
+#elim-word{font-size:.85rem;color:var(--dim);margin-bottom:.5rem;letter-spacing:.08em}
+#elim-msg{font-size:2.2rem;font-weight:900;color:var(--danger);letter-spacing:.12em;margin-bottom:.3rem}
+#elim-correct{font-size:1.1rem;color:var(--correct);margin-bottom:2rem;letter-spacing:.05em}
+
+/* ── KEYBOARD ── */
+#keyboard{margin-top:1.8rem;display:flex;flex-direction:column;align-items:center;gap:5px}
 .kb-row{display:flex;gap:5px}
-.key{width:clamp(22px,3.2vw,34px);height:clamp(22px,3.2vw,34px);background:var(--key-bg);color:var(--key-text);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:clamp(.45rem,.75vw,.65rem);transition:background .12s,color .12s,transform .1s;border:1px solid #333}
-.key.ok{background:var(--accent)!important;color:#000!important;transform:scale(1.15)}
+.key{width:clamp(22px,3.2vw,34px);height:clamp(22px,3.2vw,34px);background:var(--key-bg);
+  color:var(--key-text);border-radius:4px;display:flex;align-items:center;
+  justify-content:center;font-size:clamp(.42rem,.7vw,.62rem);border:1px solid #2e2e2e;
+  transition:background .1s,color .1s,transform .08s}
+.key.ok{background:var(--correct)!important;color:#000!important;transform:scale(1.18)}
 .key.err{background:var(--danger)!important;color:#fff!important}
-/* countdown */
-#countdown{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:100}
-#cdown-num{font-size:6rem;font-weight:bold;color:var(--accent)}
-/* particles */
-.pt{position:fixed;width:8px;height:8px;border-radius:50%;pointer-events:none;z-index:200;animation:burst .7s ease-out forwards}
-/* stats */
-.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin:1.5rem 0;width:min(320px,80vw)}
-.stat-box{background:var(--surface);padding:1rem;text-align:center;border-radius:4px}
-.stat-val{font-size:1.5rem;font-weight:bold;color:var(--accent)}
-.stat-lbl{font-size:.7rem;color:var(--dim);margin-top:.25rem;letter-spacing:.05em}
-/* anims */
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
-@keyframes pop{0%{transform:scale(.5);opacity:0}60%{transform:scale(1.3)}100%{transform:scale(1);opacity:1}}
+
+/* ── COUNTDOWN ── */
+#countdown{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;
+  align-items:center;justify-content:center;z-index:100}
+#cdown-num{font-size:6rem;font-weight:900;color:var(--accent)}
+
+/* ── PARTICLES ── */
+.pt{position:fixed;width:7px;height:7px;border-radius:50%;pointer-events:none;
+  z-index:150;animation:burst .65s ease-out forwards}
+
+/* ── SCORE POP ── */
+.score-pop{position:fixed;font-size:1.3rem;font-weight:900;pointer-events:none;
+  z-index:300;animation:scorefloat .8s ease-out forwards}
+
+/* ── STAT GRID ── */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin:1.4rem 0;width:min(340px,85vw)}
+.stat-box{background:var(--surface);padding:1rem;text-align:center;border-radius:6px}
+.stat-val{font-size:1.6rem;font-weight:900;color:var(--accent)}
+.stat-lbl{font-size:.68rem;color:var(--dim);margin-top:.3rem;letter-spacing:.06em;text-transform:uppercase}
+
+/* ── ANIMATIONS ── */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-9px)}40%{transform:translateX(9px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+@keyframes pop{0%{transform:scale(.4);opacity:0}60%{transform:scale(1.35)}100%{transform:scale(1);opacity:1}}
 @keyframes burst{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--dx),var(--dy));opacity:0}}
-@keyframes cdown{0%{transform:scale(1.6);opacity:0}20%{transform:scale(1);opacity:1}80%{transform:scale(1);opacity:1}100%{transform:scale(.5);opacity:0}}
-@keyframes tpulse{0%,100%{opacity:1}50%{opacity:.25}}
-@keyframes combopulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.08)}}
-@keyframes scorefloat{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-60px);opacity:0}}
-@keyframes bossentry{0%{letter-spacing:.05em;opacity:0}100%{letter-spacing:.15em;opacity:1}}
-.boss-word{animation:bossentry .4s ease forwards;color:var(--danger)!important}
-.boss-word span{color:var(--danger)!important}
+@keyframes cdown{0%{transform:scale(1.7);opacity:0}20%{transform:scale(1);opacity:1}80%{transform:scale(1);opacity:1}100%{transform:scale(.4);opacity:0}}
+@keyframes tpulse{0%,100%{opacity:1}50%{opacity:.2}}
+@keyframes combopulse{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.1)}}
+@keyframes scorefloat{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-65px);opacity:0}}
+@keyframes wpmPop{0%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.3)}60%{opacity:1;transform:translateX(-50%) translateY(-8px) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.9)}}
+@keyframes bossentry{0%{letter-spacing:.04em;opacity:0}100%{letter-spacing:.18em;opacity:1}}
+.boss-word{animation:bossentry .35s ease forwards}
 @media(max-width:600px){#keyboard{display:none}}
 </style>
 </head>
@@ -73,23 +133,26 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 
 <div id="countdown" class="hidden">
   <div id="cdown-num"></div>
-  <div style="font-size:1rem;color:var(--dim);margin-top:1rem;letter-spacing:.2em">GET READY</div>
+  <div style="font-size:.95rem;color:var(--dim);margin-top:1rem;letter-spacing:.25em">GET READY</div>
+</div>
+
+<!-- ELIMINATED BANNER -->
+<div id="elim-banner">
+  <div id="elim-word"></div>
+  <div id="elim-msg">❌ ELIMINATED</div>
+  <div id="elim-correct"></div>
 </div>
 
 <!-- MENU -->
 <div id="screen-menu" class="screen">
-  <div style="font-size:3rem;font-weight:bold;letter-spacing:.15em;margin-bottom:.5rem">TYPEFAST</div>
-  <div style="color:var(--dim);margin-bottom:2rem;font-size:.95rem">type the word before time runs out</div>
-  <div class="themes">
-    <div class="theme-btn active" data-t="classic" style="background:#22c55e" title="Classic" onclick="setTheme('classic',this)"></div>
-    <div class="theme-btn" data-t="neon" style="background:#00ff88" title="Neon" onclick="setTheme('neon',this)"></div>
-    <div class="theme-btn" data-t="retro" style="background:#ff6600" title="Retro" onclick="setTheme('retro',this)"></div>
-    <div class="theme-btn" data-t="light" style="background:#7c3aed" title="Light" onclick="setTheme('light',this)"></div>
-  </div>
-  <div id="menu-hs" class="hidden" style="color:var(--warn);margin-bottom:1.5rem;font-size:.9rem"></div>
-  <button class="btn-main" onclick="runCountdown()">PLAY</button>
-  <div style="margin-top:3rem;color:var(--dim);font-size:.8rem;text-align:center;line-height:1.8">
-    auto-submits when correct · 5+ streak = 2× · 10+ streak = 3×<br>every 10th word is a boss word 💀
+  <div id="logo">TYPEFAST</div>
+  <div id="tagline">think fast · type faster</div>
+  <div id="menu-hs"></div>
+  <button class="btn-main" onclick="runCountdown()">▶ PLAY</button>
+  <div class="menu-info">
+    auto-submits on correct · <kbd style="color:var(--text)">Enter</kbd> to submit manually<br>
+    wrong answer = <span style="color:var(--danger)">eliminated</span> · 5+ streak = 2× · 10+ = 3×<br>
+    streak grows → timer shrinks · every 10th word is a boss 💀
   </div>
 </div>
 
@@ -97,39 +160,48 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 <div id="screen-game" class="screen hidden">
   <div class="hdr">
     <div>score <span class="hv" id="hdr-score">0</span></div>
-    <div style="color:var(--accent2)" id="hdr-wpm">—</div>
+    <div id="hdr-wpm-strip" style="color:var(--accent);font-weight:900;font-size:.88rem">— WPM</div>
     <div id="hdr-streak-wrap">streak <span class="hv" id="hdr-streak">0</span><span id="fire-icons"></span></div>
   </div>
-  <div id="combo-badge">2×COMBO</div>
+
+  <div id="combo-badge">2× COMBO</div>
   <div id="timer-wrap"><div id="timer-bar"></div></div>
+
   <div id="word-area">
-    <div id="boss-label">💀 BOSS WORD</div>
+    <div id="wpm-flash"></div>
+    <div id="boss-label" style="font-size:.65rem;letter-spacing:.2em;color:var(--danger);margin-bottom:.5rem;opacity:0;transition:opacity .3s">💀 BOSS WORD</div>
     <div id="word-letters"></div>
     <div id="tick-el">✅</div>
   </div>
-  <input id="game-input" type="text" placeholder="type here..." autocomplete="off" autocorrect="off" spellcheck="false" oninput="onInput()" onkeydown="onKey(event)"/>
-  <div class="hint">auto-submits when correct</div>
+
+  <input id="game-input" type="text" placeholder="type here…"
+         autocomplete="off" autocorrect="off" spellcheck="false"
+         oninput="onInput()" onkeydown="onKey(event)"/>
+  <div class="hint">auto-submits when correct · Enter to submit (wrong = eliminated)</div>
   <div id="keyboard"></div>
+
+  <div id="live-wpm"></div>
 </div>
 
-<!-- OVER -->
+<!-- GAME OVER -->
 <div id="screen-over" class="screen hidden">
-  <div style="font-size:1.5rem;color:var(--danger);margin-bottom:.5rem;letter-spacing:.1em">TIME'S UP</div>
-  <div style="font-size:4rem;font-weight:bold" id="over-score">0</div>
-  <div style="color:var(--dim);margin-bottom:.5rem">points</div>
-  <div id="over-hs" style="color:var(--warn);font-size:.9rem;min-height:1.4rem;margin-bottom:.25rem"></div>
+  <div style="font-size:1.4rem;color:var(--danger);margin-bottom:.4rem;letter-spacing:.12em;font-weight:900">ELIMINATED</div>
+  <div style="font-size:.82rem;color:var(--dim);margin-bottom:.8rem" id="over-word-label"></div>
+  <div style="font-size:4.5rem;font-weight:900;color:var(--accent)" id="over-score">0</div>
+  <div style="color:var(--dim);margin-bottom:.4rem;font-size:.85rem">POINTS</div>
+  <div id="over-hs" style="color:var(--accent);font-size:.88rem;min-height:1.3rem;margin-bottom:.8rem"></div>
   <div class="stat-grid">
-    <div class="stat-box"><div class="stat-val" id="st-wpm">0</div><div class="stat-lbl">WPM</div></div>
-    <div class="stat-box"><div class="stat-val" id="st-acc">—</div><div class="stat-lbl">ACCURACY</div></div>
-    <div class="stat-box"><div class="stat-val" id="st-fast">—</div><div class="stat-lbl">FASTEST WORD</div></div>
-    <div class="stat-box"><div class="stat-val" id="st-boss">0</div><div class="stat-lbl">BOSS WORDS BEATEN</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-best-wpm">0</div><div class="stat-lbl">Best WPM</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-avg-wpm">0</div><div class="stat-lbl">Avg WPM</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-acc">—</div><div class="stat-lbl">Accuracy</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Best Streak</div></div>
   </div>
   <button class="btn-main" onclick="runCountdown()">PLAY AGAIN</button>
   <button class="btn-sub" onclick="showMenu()">menu</button>
 </div>
 
 <script>
-// ── DATA ──────────────────────────────────────────────────────────────
+// ── WORD LISTS ─────────────────────────────────────────────────────────
 const W={
   easy:["cat","dog","run","big","sun","hat","red","cup","leg","map","box","pen","far","win","hot","old","new","ice","air","sky","sea","job","fun","key","bag","arm","ear","eye","lip","rib"],
   med:["apple","brave","chess","drive","eagle","flame","grace","happy","image","joker","kneel","lemon","magic","night","ocean","piano","queen","river","stone","tiger","under","voice","water","youth","zebra","blaze","cloud","dance","earth"],
@@ -138,65 +210,63 @@ const W={
   boss:["incomprehensible","uncomfortable","revolutionary","acknowledgement","straightforward","responsibility","circumstances","accomplishment","approximately","communication","encouragement","extraordinary","qualification","unfortunately","administration","comprehension","disappointment","establishment","opportunities","specification"]
 };
 
-// ── THEMES ────────────────────────────────────────────────────────────
-const TH={
-  classic:{'--bg':'#0f0f0f','--text':'#ffffff','--accent':'#22c55e','--accent2':'#a78bfa','--warn':'#f59e0b','--danger':'#ef4444','--dim':'#555','--surface':'#1a1a1a','--key-bg':'#2a2a2a','--key-text':'#888'},
-  neon:{'--bg':'#05050f','--text':'#e0e0ff','--accent':'#00ff88','--accent2':'#ff00ff','--warn':'#ffdd00','--danger':'#ff3355','--dim':'#3344aa','--surface':'#0d0d20','--key-bg':'#0a0a1a','--key-text':'#3344aa'},
-  retro:{'--bg':'#1a0f00','--text':'#ffb347','--accent':'#ff6600','--accent2':'#ffdd00','--warn':'#ffaa00','--danger':'#ff2200','--dim':'#664422','--surface':'#2a1500','--key-bg':'#2a1500','--key-text':'#664422'},
-  light:{'--bg':'#f0f0f0','--text':'#111','--accent':'#16a34a','--accent2':'#7c3aed','--warn':'#d97706','--danger':'#dc2626','--dim':'#999','--surface':'#e0e0e0','--key-bg':'#d0d0d0','--key-text':'#aaa'}
-};
-function setTheme(name,btn){
-  Object.entries(TH[name]).forEach(([k,v])=>document.documentElement.style.setProperty(k,v));
-  document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
-  if(btn) btn.classList.add('active');
-}
-setTheme('classic',document.querySelector('[data-t="classic"]'));
-
 // ── KEYBOARD ──────────────────────────────────────────────────────────
 const ROWS=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']];
 (function(){
   const kb=document.getElementById('keyboard');
   ROWS.forEach(row=>{const r=document.createElement('div');r.className='kb-row';row.forEach(k=>{const el=document.createElement('div');el.className='key';el.textContent=k;el.id='k'+k;r.appendChild(el);});kb.appendChild(r);});
 })();
-function flashKey(ch,ok){const el=document.getElementById('k'+ch.toUpperCase());if(!el)return;el.classList.add(ok?'ok':'err');setTimeout(()=>el.classList.remove('ok','err'),280);}
+function flashKey(ch,ok){const el=document.getElementById('k'+ch.toUpperCase());if(!el)return;el.classList.add(ok?'ok':'err');setTimeout(()=>el.classList.remove('ok','err'),260);}
 
 // ── STATE ─────────────────────────────────────────────────────────────
-let score=0,streak=0,wordsTyped=0,hs=0,word='',used=[],usedBoss=[],maxT=10,tim=null,ticking=false;
-let gStart=0,totChars=0,wpm=0,keysTotal=0,keysCorrect=0,wordTimes=[],wStart=0,lastLen=0,bossBeaten=0,isBoss=false;
+let score=0,streak=0,bestStreak=0,wordsTyped=0,hs=0;
+let word='',used=[],usedBoss=[],maxT=10,tim=null,ticking=false,isBoss=false;
+let gStart=0,totChars=0,keysTotal=0,keysCorrect=0,wStart=0,lastLen=0;
+let bossBeaten=0,wordWpmList=[],lastWordWpm=0,eliminatedWord='';
 
 function getMultiplier(){return streak>=10?3:streak>=5?2:1;}
 function pool(s){return s<5?W.easy:s<12?W.med:s<22?W.hard:W.exp;}
-function timeFor(s,w,boss){if(boss)return Math.max(6,Math.floor(w.length/2));return Math.max(8-Math.floor(s/5),3)+Math.floor(w.length/4);}
+
+// Timer gets shorter the higher the streak, like Roblox Spelling Bee
+function timeFor(s,w,boss){
+  if(boss)return Math.max(5,Math.ceil(w.length*0.55));
+  const base=Math.max(10-Math.floor(s/4),4);
+  const streakPenalty=Math.min(Math.floor(streak/3),4); // -1s per 3-streak, cap -4s
+  return Math.max(base-streakPenalty+Math.ceil(w.length/5),3);
+}
 
 function pickWord(s,boss){
   if(boss){let w,a=0;do{w=W.boss[Math.floor(Math.random()*W.boss.length)];a++;}while(usedBoss.includes(w)&&a<10);return w;}
   const p=pool(s);let w,a=0;do{w=p[Math.floor(Math.random()*p.length)];a++;}while(used.includes(w)&&a<20);return w;
 }
 
-function $id(id){return document.getElementById(id);}
+function $id(i){return document.getElementById(i);}
 function show(id){$id(id).classList.remove('hidden');}
 function hide(id){$id(id).classList.add('hidden');}
-function showMenu(){hide('screen-game');hide('screen-over');show('screen-menu');if(hs>0){$id('menu-hs').textContent='🏆 Best: '+hs;$id('menu-hs').classList.remove('hidden');}}
+function showMenu(){hide('screen-game');hide('screen-over');show('screen-menu');$id('menu-hs').textContent=hs>0?'🏆 Best: '+hs+' pts':'';}
 
 // ── COUNTDOWN ─────────────────────────────────────────────────────────
 function runCountdown(){
-  hide('screen-menu');hide('screen-over');hide('screen-game');
+  hide('screen-menu');hide('screen-over');hide('screen-game');$id('elim-banner').classList.remove('show');
   const cd=$id('countdown'),num=$id('cdown-num');
   cd.classList.remove('hidden');
   const steps=['3','2','1','GO!'];let i=0;
   (function step(){
     num.textContent=steps[i];num.style.animation='none';void num.offsetWidth;num.style.animation='cdown 1s ease forwards';i++;
-    if(i<steps.length)setTimeout(step,900);else setTimeout(()=>{cd.classList.add('hidden');startGame();},700);
+    if(i<steps.length)setTimeout(step,900);
+    else setTimeout(()=>{cd.classList.add('hidden');startGame();},700);
   })();
 }
 
 // ── GAME ──────────────────────────────────────────────────────────────
 function startGame(){
-  score=0;streak=0;wordsTyped=0;used=[];usedBoss=[];totChars=0;wpm=0;keysTotal=0;keysCorrect=0;wordTimes=[];lastLen=0;bossBeaten=0;ticking=false;isBoss=false;
+  score=0;streak=0;bestStreak=0;wordsTyped=0;used=[];usedBoss=[];
+  totChars=0;keysTotal=0;keysCorrect=0;wordWpmList=[];lastLen=0;bossBeaten=0;
+  ticking=false;isBoss=false;eliminatedWord='';
   show('screen-game');updateHdr();updateCombo();updateFire();
   setNextWord(0,false);
   gStart=Date.now();wStart=Date.now();
-  setTimeout(()=>$id('game-input').focus(),50);
+  setTimeout(()=>$id('game-input').focus(),60);
 }
 
 function setNextWord(s,boss){
@@ -205,22 +275,35 @@ function setNextWord(s,boss){
   if(boss)usedBoss.push(word);else used.push(word);
   const t=timeFor(s,word,boss);maxT=t;
   resetInp();renderWord();startTimer(t);
-  $id('boss-label').classList.toggle('show',boss);
-  $id('word-letters').className=boss?'boss-word':'';
+  $id('boss-label').style.opacity=boss?'1':'0';
   wStart=Date.now();
 }
 
 function renderWord(){
   const v=$id('game-input').value;
-  const isBossNow=isBoss;
+  const boss=isBoss;
   $id('word-letters').innerHTML=word.split('').map((ch,i)=>{
     const tp=v[i];
-    const c=!tp?(isBossNow?'var(--danger)':'var(--text)'):tp.toLowerCase()===ch.toLowerCase()?'var(--accent)':'var(--danger)';
-    return `<span style="color:${c};transition:color .1s">${ch.toUpperCase()}</span>`;
+    const c=!tp?(boss?'var(--danger)':'var(--text)'):tp.toLowerCase()===ch.toLowerCase()?'var(--correct)':'var(--danger)';
+    return `<span style="color:${c};transition:color .08s">${ch.toUpperCase()}</span>`;
   }).join('');
+  // live per-word WPM
+  if(v.length>0){
+    const elapsed=(Date.now()-wStart)/60000;
+    const live=Math.round((v.length/5)/elapsed);
+    $id('live-wpm').textContent=live+' WPM  ·  typing now';
+  } else {
+    $id('live-wpm').textContent='';
+  }
 }
 
-function resetInp(){const el=$id('game-input');el.value='';el.style.opacity='1';el.disabled=false;lastLen=0;$id('timer-wrap').classList.remove('pulse');}
+function resetInp(){
+  const el=$id('game-input');
+  el.value='';el.style.opacity='1';el.disabled=false;
+  el.classList.remove('err-shake');lastLen=0;
+  $id('timer-wrap').classList.remove('pulse');
+  $id('live-wpm').textContent='';
+}
 
 function startTimer(t){
   clearInterval(tim);let left=t;updateBar(left,t);
@@ -228,100 +311,168 @@ function startTimer(t){
     left--;updateBar(left,maxT);
     if(left<=3&&left>0)$id('timer-wrap').classList.add('pulse');
     else if(left>3)$id('timer-wrap').classList.remove('pulse');
-    if(left<=0){clearInterval(tim);endGame();}
+    if(left<=0){clearInterval(tim);eliminatedWord='';endGame('time');}
   },1000);
 }
 
 function updateBar(l,m){
   const p=l/m,bar=$id('timer-bar');
   bar.style.width=(p*100)+'%';
-  bar.style.background=p>.5?'var(--accent)':p>.25?'var(--warn)':'var(--danger)';
+  bar.style.background=p>.5?'var(--correct)':p>.25?'var(--warn)':'var(--danger)';
 }
 
 function updateHdr(){
   $id('hdr-score').textContent=score;
-  const s=$id('hdr-streak');s.textContent=streak;s.style.color=streak>=5?'var(--warn)':streak>=3?'var(--accent)':'var(--text)';
-  $id('hdr-wpm').textContent=wpm>0?wpm+' WPM':'—';
+  const s=$id('hdr-streak');s.textContent=streak;
+  s.style.color=streak>=5?'var(--accent)':streak>=3?'var(--correct)':'var(--text)';
+  // show last word WPM in header strip
+  $id('hdr-wpm-strip').textContent=lastWordWpm>0?lastWordWpm+' WPM':'— WPM';
 }
 
 function updateFire(){
-  const fires=streak>=10?'🔥🔥🔥':streak>=7?'🔥🔥':streak>=5?'🔥':'';
-  $id('fire-icons').textContent=fires?(' '+fires):'';
+  const f=streak>=10?'🔥🔥🔥':streak>=7?'🔥🔥':streak>=5?'🔥':'';
+  $id('fire-icons').textContent=f?' '+f:'';
 }
 
 function updateCombo(){
   const m=getMultiplier(),b=$id('combo-badge');
-  if(m>1){b.className='combo-badge show x'+m;b.textContent=m+'× COMBO';b.classList.remove('hidden');}
-  else{b.classList.remove('show');}
+  if(m>1){b.className='combo-badge show x'+m;b.textContent=m+'× COMBO';}
+  else{b.className='combo-badge';}
 }
 
+// ── PER-WORD WPM FLASH (Roblox-style) ────────────────────────────────
+function flashWpm(wpm){
+  const el=$id('wpm-flash');
+  el.textContent=wpm+' WPM';
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
+}
+
+// ── INPUT HANDLING ────────────────────────────────────────────────────
 function onInput(){
   if(ticking)return;
   const el=$id('game-input'),v=el.value;
   if(v.length>lastLen){
     const ch=v[v.length-1],ex=word[v.length-1];
     const ok=ch&&ex&&ch.toLowerCase()===ex.toLowerCase();
-    flashKey(ch,ok);keysTotal+=(v.length-lastLen);
+    flashKey(ch,ok);
+    keysTotal+=(v.length-lastLen);
   }
-  lastLen=v.length;renderWord();
+  lastLen=v.length;
+  renderWord();
+
+  // Auto-submit when fully correct
   if(v.toLowerCase()===word.toLowerCase()){
-    clearInterval(tim);$id('timer-wrap').classList.remove('pulse');
-    wordTimes.push({word,ms:Date.now()-wStart});
-    keysCorrect+=word.length;totChars+=word.length;
-    const mult=getMultiplier();
-    score+=mult;streak++;wordsTyped++;
-    if(isBoss)bossBeaten++;
-    if(score>hs)hs=score;
-    wpm=Math.round((totChars/5)/((Date.now()-gStart)/60000));
-    showScorePop(mult);updateHdr();updateCombo();updateFire();doBurst();ticking=true;
-    el.disabled=true;el.style.opacity='0';
-    $id('word-letters').style.visibility='hidden';
-    const tk=$id('tick-el');tk.style.display='block';tk.style.animation='none';void tk.offsetWidth;tk.style.animation='pop .4s ease';
-    setTimeout(()=>{
-      tk.style.display='none';$id('word-letters').style.visibility='visible';ticking=false;
-      const nextBoss=wordsTyped>0&&wordsTyped%10===0;
-      setNextWord(score,nextBoss);
-      setTimeout(()=>$id('game-input').focus(),30);
-    },500);
+    submitCorrect();
   }
 }
 
 function onKey(e){
-  if(e.key==='Enter'&&!ticking&&$id('game-input').value.trim()){
-    const wl=$id('word-letters');wl.classList.add('shake');setTimeout(()=>wl.classList.remove('shake'),400);
-    $id('game-input').value='';lastLen=0;renderWord();
+  if(ticking)return;
+  if(e.key==='Enter'){
+    const v=$id('game-input').value.trim();
+    if(!v)return;
+    if(v.toLowerCase()===word.toLowerCase()){
+      submitCorrect();
+    } else {
+      // WRONG → ELIMINATED (Roblox-style)
+      eliminatedWord=v;
+      clearInterval(tim);
+      $id('timer-wrap').classList.remove('pulse');
+      endGame('wrong');
+    }
   }
+}
+
+function submitCorrect(){
+  clearInterval(tim);$id('timer-wrap').classList.remove('pulse');
+
+  // Per-word WPM (Roblox Spelling Bee formula: chars/5 / minutes)
+  const ms=Date.now()-wStart;
+  const wordWpm=Math.round((word.length/5)/(ms/60000));
+  lastWordWpm=wordWpm;
+  wordWpmList.push(wordWpm);
+
+  keysCorrect+=word.length;
+  totChars+=word.length;
+  const mult=getMultiplier();
+  score+=mult;streak++;wordsTyped++;
+  if(streak>bestStreak)bestStreak=streak;
+  if(isBoss)bossBeaten++;
+  if(score>hs)hs=score;
+
+  flashWpm(wordWpm);
+  showScorePop(mult);
+  updateHdr();updateCombo();updateFire();
+  doBurst();
+
+  ticking=true;
+  const el=$id('game-input');
+  el.disabled=true;el.style.opacity='0';
+  $id('word-letters').style.visibility='hidden';
+  const tk=$id('tick-el');tk.style.display='block';tk.style.animation='none';void tk.offsetWidth;tk.style.animation='pop .38s ease';
+
+  setTimeout(()=>{
+    tk.style.display='none';$id('word-letters').style.visibility='visible';
+    ticking=false;
+    const nextBoss=wordsTyped>0&&wordsTyped%10===0;
+    setNextWord(score,nextBoss);
+    setTimeout(()=>$id('game-input').focus(),30);
+  },480);
 }
 
 function showScorePop(mult){
   if(mult<=1)return;
   const r=$id('word-area').getBoundingClientRect();
   const el=document.createElement('div');el.className='score-pop';
-  el.style.cssText=`left:${r.right+8}px;top:${r.top}px;color:${mult>=3?'var(--danger)':'var(--warn)'}`;
-  el.textContent='+'+mult;document.body.appendChild(el);setTimeout(()=>el.remove(),800);
+  el.style.cssText=`left:${r.right+6}px;top:${r.top+10}px;color:${mult>=3?'var(--danger)':'var(--warn)'}`;
+  el.textContent='+'+mult;document.body.appendChild(el);setTimeout(()=>el.remove(),850);
 }
 
 function doBurst(){
   const r=$id('word-area').getBoundingClientRect();
   const cx=r.left+r.width/2,cy=r.top+r.height/2;
-  const cols=['var(--accent)','var(--accent2)','var(--warn)'];
-  for(let i=0;i<18;i++){
+  const cols=['var(--accent)','var(--correct)','var(--accent2)'];
+  for(let i=0;i<16;i++){
     const p=document.createElement('div');p.className='pt';
-    const a=(i/18)*360,d=50+Math.random()*55;
+    const a=(i/16)*360,d=45+Math.random()*50;
     const dx=Math.cos(a*Math.PI/180)*d,dy=Math.sin(a*Math.PI/180)*d;
     p.style.cssText=`left:${cx}px;top:${cy}px;background:${cols[i%3]};--dx:${dx}px;--dy:${dy}px`;
-    document.body.appendChild(p);setTimeout(()=>p.remove(),700);
+    document.body.appendChild(p);setTimeout(()=>p.remove(),660);
   }
 }
 
-function endGame(){
+// ── GAME OVER ──────────────────────────────────────────────────────────
+function endGame(reason){
+  // Show eliminated overlay briefly if wrong answer
+  if(reason==='wrong'){
+    $id('elim-msg').textContent='❌ ELIMINATED';
+    $id('elim-word').textContent='you typed: "'+eliminatedWord+'"';
+    $id('elim-correct').textContent='correct: '+word.toUpperCase();
+    $id('elim-banner').classList.add('show');
+    setTimeout(()=>{$id('elim-banner').classList.remove('show');showOver();},1600);
+  } else {
+    $id('elim-msg').textContent="⏱ TIME'S UP";
+    $id('elim-word').textContent='the word was: '+word.toUpperCase();
+    $id('elim-correct').textContent='';
+    $id('elim-banner').classList.add('show');
+    setTimeout(()=>{$id('elim-banner').classList.remove('show');showOver();},1400);
+  }
+}
+
+function showOver(){
   hide('screen-game');show('screen-over');
   $id('over-score').textContent=score;
-  $id('over-hs').textContent=score>0&&score>=hs?'🏆 New High Score!':hs>0?'Best: '+hs:'';
-  $id('st-wpm').textContent=wpm||0;
+  $id('over-word-label').textContent=wordsTyped+' word'+(wordsTyped!==1?'s':'')+' typed';
+  $id('over-hs').textContent=score>0&&score>=hs?'🏆 New High Score!':hs>0?'Best: '+hs+' pts':'';
+
+  const best=wordWpmList.length?Math.max(...wordWpmList):0;
+  const avg=wordWpmList.length?Math.round(wordWpmList.reduce((a,b)=>a+b,0)/wordWpmList.length):0;
+  $id('st-best-wpm').textContent=best||'—';
+  $id('st-avg-wpm').textContent=avg||'—';
   $id('st-acc').textContent=keysTotal>0?Math.round(keysCorrect/keysTotal*100)+'%':'—';
-  $id('st-fast').textContent=wordTimes.length?wordTimes.reduce((a,b)=>a.ms<b.ms?a:b).word:'—';
-  $id('st-boss').textContent=bossBeaten;
+  $id('st-streak').textContent=bestStreak;
 }
 </script>
 </body>
