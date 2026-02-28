@@ -3,7 +3,7 @@
 
 A high-octane, minimalist typing challenge where speed and accuracy are your only lifelines. Modeled after Roblox's Spelling Bee — with a live announcer, per-word WPM tracking, and boss words that will break you.
 
-[**🚀 PLAY NOW**](https://them1ddlem1n.github.io/TypeFast/)
+[**PLAY NOW!**](https://them1ddlem1n.github.io/TypeFast/)
 
 ---
 
@@ -20,7 +20,7 @@ A high-octane, minimalist typing challenge where speed and accuracy are your onl
 ## ⚡ Key Features
 
 ### 🔊 Announcer Voice
-- Every word is read aloud using the Web Speech API — no libraries, no downloads.
+- Every word is read aloud using the Web Speech API — no libraries, no downloads needed.
 - First word: *"Spell the word. [word]"* — subsequent words: *"Alright, spell the word. [word]"*
 - Automatically selects the best available voice on your device.
 - Toggle on/off from the main menu with a live speaking indicator.
@@ -39,7 +39,7 @@ A high-octane, minimalist typing challenge where speed and accuracy are your onl
 
 ### 💀 Boss Word Hall of Shame
 Includes some of the most unhinged words in the English language:
-- `chargoggagoggmanchauggagoggchaubunagungamaugg`
+- `chargoggagoggmanchauggagoggchaubunagungamaugg` - lake lol
 - `pneumonoultramicroscopicsilicovolcanoconiosis`
 - `antidisestablishmentarianism`
 - `floccinaucinihilipilification`
@@ -65,4 +65,4 @@ Practice finger placement on [TypingClub](https://www.typingclub.com) or benchma
 
 ---
 
-Developed by [TheM1ddleM1n]
+#### Developed by TheM1ddleM1n
