@@ -28,6 +28,11 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 #menu-hs{color:var(--accent);font-size:.9rem;margin-bottom:1.2rem;letter-spacing:.05em;min-height:1.2rem}
 .menu-info{margin-top:2.5rem;color:var(--dim);font-size:.78rem;text-align:center;line-height:2;letter-spacing:.03em}
 
+/* ── VOICE TOGGLE ── */
+#voice-toggle{display:flex;align-items:center;gap:.6rem;margin-bottom:1.6rem;cursor:pointer;user-select:none}
+#voice-toggle input{accent-color:var(--accent);width:16px;height:16px;cursor:pointer}
+#voice-toggle label{color:var(--dim);font-size:.82rem;letter-spacing:.06em;cursor:pointer}
+
 /* ── HUD ── */
 .hdr{position:absolute;top:1.6rem;left:0;right:0;display:flex;justify-content:space-between;
   align-items:center;padding:0 1.8rem;font-size:.82rem;color:var(--dim)}
@@ -52,8 +57,8 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 /* ── WORD AREA ── */
 #word-area{min-height:7rem;display:flex;flex-direction:column;
   align-items:center;justify-content:center;margin-bottom:2rem;position:relative}
-#word-letters{font-size:clamp(2rem,6vw,3.8rem);font-weight:900;letter-spacing:.18em;
-  user-select:none;transition:opacity .15s}
+#word-letters{font-size:clamp(1.4rem,5vw,3.4rem);font-weight:900;letter-spacing:.18em;
+  user-select:none;transition:opacity .15s;max-width:90vw;text-align:center;word-break:break-all;line-height:1.3}
 
 /* ── PER-WORD WPM FLASH ── */
 #wpm-flash{position:absolute;top:-2.8rem;left:50%;transform:translateX(-50%);
@@ -64,21 +69,25 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 /* ── INPUT ── */
 #game-input{background:none;border:none;border-bottom:2px solid #333;
   color:var(--text);font-size:1.5rem;font-family:'Courier New',monospace;
-  text-align:center;width:min(320px,82vw);padding:.5rem;outline:none;
+  text-align:center;width:min(360px,85vw);padding:.5rem;outline:none;
   letter-spacing:.12em;transition:border-color .2s}
 #game-input:focus{border-color:var(--accent)}
-#game-input.err-shake{animation:shake .35s ease;border-color:var(--danger)!important}
 .hint{margin-top:.8rem;color:var(--dim);font-size:.75rem;letter-spacing:.04em}
 
-/* ── LIVE WPM STRIP (shows current word speed) ── */
+/* ── LIVE WPM ── */
 #live-wpm{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);
   font-size:.78rem;color:var(--dim);letter-spacing:.05em;white-space:nowrap}
 
 /* ── TICK ── */
 #tick-el{font-size:3.2rem;display:none}
 
+/* ── SPEAKING INDICATOR ── */
+#speaking-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);
+  display:inline-block;margin-left:.4rem;opacity:0;transition:opacity .2s;animation:speakpulse .6s ease infinite}
+#speaking-dot.active{opacity:1}
+
 /* ── ELIMINATED BANNER ── */
-#elim-banner{position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+#elim-banner{position:fixed;inset:0;background:rgba(0,0,0,.78);backdrop-filter:blur(8px);
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   z-index:200;opacity:0;pointer-events:none;transition:opacity .3s}
 #elim-banner.show{opacity:1;pointer-events:all}
@@ -125,6 +134,7 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 @keyframes scorefloat{0%{transform:translateY(0);opacity:1}100%{transform:translateY(-65px);opacity:0}}
 @keyframes wpmPop{0%{opacity:1;transform:translateX(-50%) translateY(0) scale(1.3)}60%{opacity:1;transform:translateX(-50%) translateY(-8px) scale(1)}100%{opacity:0;transform:translateX(-50%) translateY(-20px) scale(.9)}}
 @keyframes bossentry{0%{letter-spacing:.04em;opacity:0}100%{letter-spacing:.18em;opacity:1}}
+@keyframes speakpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.5)}}
 .boss-word{animation:bossentry .35s ease forwards}
 @media(max-width:600px){#keyboard{display:none}}
 </style>
@@ -148,6 +158,11 @@ button{font-family:'Courier New',monospace;cursor:pointer}
   <div id="logo">TYPEFAST</div>
   <div id="tagline">think fast · type faster</div>
   <div id="menu-hs"></div>
+  <div id="voice-toggle">
+    <input type="checkbox" id="voice-cb" checked/>
+    <label for="voice-cb">🔊 ANNOUNCER VOICE</label>
+    <span id="speaking-dot"></span>
+  </div>
   <button class="btn-main" onclick="runCountdown()">▶ PLAY</button>
   <div class="menu-info">
     auto-submits on correct · <kbd style="color:var(--text)">Enter</kbd> to submit manually<br>
@@ -179,7 +194,6 @@ button{font-family:'Courier New',monospace;cursor:pointer}
          oninput="onInput()" onkeydown="onKey(event)"/>
   <div class="hint">auto-submits when correct · Enter to submit (wrong = eliminated)</div>
   <div id="keyboard"></div>
-
   <div id="live-wpm"></div>
 </div>
 
@@ -191,8 +205,8 @@ button{font-family:'Courier New',monospace;cursor:pointer}
   <div style="color:var(--dim);margin-bottom:.4rem;font-size:.85rem">POINTS</div>
   <div id="over-hs" style="color:var(--accent);font-size:.88rem;min-height:1.3rem;margin-bottom:.8rem"></div>
   <div class="stat-grid">
-    <div class="stat-box"><div class="stat-val" id="st-best-wpm">0</div><div class="stat-lbl">Best WPM</div></div>
-    <div class="stat-box"><div class="stat-val" id="st-avg-wpm">0</div><div class="stat-lbl">Avg WPM</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-best-wpm">—</div><div class="stat-lbl">Best WPM</div></div>
+    <div class="stat-box"><div class="stat-val" id="st-avg-wpm">—</div><div class="stat-lbl">Avg WPM</div></div>
     <div class="stat-box"><div class="stat-val" id="st-acc">—</div><div class="stat-lbl">Accuracy</div></div>
     <div class="stat-box"><div class="stat-val" id="st-streak">0</div><div class="stat-lbl">Best Streak</div></div>
   </div>
@@ -203,12 +217,128 @@ button{font-family:'Courier New',monospace;cursor:pointer}
 <script>
 // ── WORD LISTS ─────────────────────────────────────────────────────────
 const W={
-  easy:["cat","dog","run","big","sun","hat","red","cup","leg","map","box","pen","far","win","hot","old","new","ice","air","sky","sea","job","fun","key","bag","arm","ear","eye","lip","rib"],
-  med:["apple","brave","chess","drive","eagle","flame","grace","happy","image","joker","kneel","lemon","magic","night","ocean","piano","queen","river","stone","tiger","under","voice","water","youth","zebra","blaze","cloud","dance","earth"],
-  hard:["balloon","cabinet","diamond","elegant","fashion","granite","harmony","inspire","jumping","kitchen","landing","morning","natural","opening","painted","quantum","rapidly","silence","theater","uniform","vibrant","weather","younger","ancient","balance","captain","dolphin","emperor"],
-  exp:["accomplish","beautiful","celebrate","determine","elaborate","furniture","glamorous","highlight","important","journalist","knowledge","landscape","narrative","obsession","recognize","structure","temporary","universal","vulnerable","wonderful","extremely","breathing","certainly","chocolate","different","establish","fantastic"],
-  boss:["incomprehensible","uncomfortable","revolutionary","acknowledgement","straightforward","responsibility","circumstances","accomplishment","approximately","communication","encouragement","extraordinary","qualification","unfortunately","administration","comprehension","disappointment","establishment","opportunities","specification"]
+  easy:[
+    "cat","dog","run","big","sun","hat","red","cup","leg","map",
+    "box","pen","far","win","hot","old","new","ice","air","sky",
+    "sea","job","fun","key","bag","arm","ear","eye","lip","rib",
+    "ant","bat","cab","dam","eel","fan","gem","hen","ink","jar",
+    "keg","log","mud","net","oak","paw","rat","sap","tin","web",
+    "yak","zoo","arc","dew","fog","gut","hip","ivy","jot","kit",
+    "lap","mob","nap","ore","pod","rug","sob","tan","urn","van",
+    "wax","yew","zip","axe","bay","cog","den","elm","foe","gap"
+  ],
+  med:[
+    "apple","brave","chess","drive","eagle","flame","grace","happy","image","joker",
+    "kneel","lemon","magic","night","ocean","piano","queen","river","stone","tiger",
+    "under","voice","water","youth","zebra","blaze","cloud","dance","earth","frost",
+    "giant","handy","inlet","jewel","karma","latch","manor","nerve","orbit","plaid",
+    "query","ridge","scone","trout","usher","venom","waltz","xenon","yacht","zonal",
+    "abbey","brine","crisp","duchy","ember","flint","graft","heron","irony","joust",
+    "knack","lyric","marsh","nymph","oxide","pluck","quirk","realm","shrub","taunt",
+    "ulcer","vivid","wrist","xylem","yearn","zesty","brisk","cleft","dross","expel"
+  ],
+  hard:[
+    "balloon","cabinet","diamond","elegant","fashion","granite","harmony","inspire","jumping","kitchen",
+    "landing","morning","natural","opening","painted","quantum","rapidly","silence","theater","uniform",
+    "vibrant","weather","younger","ancient","balance","captain","dolphin","emperor","factory","gesture",
+    "highway","illness","jasmine","kinship","lantern","mineral","network","obvious","pilgrim","quarter",
+    "reserve","station","texture","upriver","village","warrior","xeriscape","yellowed","zealous","abstain",
+    "bracket","cobweb","discord","earnest","ferment","genuine","harmful","impeach","journey","kingdom",
+    "leisure","mandate","nominal","outpost","pyramid","quintet","rampart","sinuous","tradesman","upright",
+    "vagrant","wampum","xiphoid","yardarm","zonally","abscond","barrack","clarify","durable","eclipse"
+  ],
+  exp:[
+    "accomplish","beautiful","celebrate","determine","elaborate","furniture","glamorous","highlight","important","journalist",
+    "knowledge","landscape","narrative","obsession","recognize","structure","temporary","universal","vulnerable","wonderful",
+    "extremely","breathing","certainly","chocolate","different","establish","fantastic","gorgeous","honorable","invisible",
+    "justifiable","kilometer","luxurious","mythology","nourished","operation","perpetual","quotation","ridiculous","sanctuary",
+    "terrifying","unanimous","variation","weathering","yesterday","zealously","abnormally","carefully","diligence","efficient",
+    "flourished","gracefully","hindsight","incognito","juxtapose","kinesthetic","labyrinth","medallion","nefarious","obscurely",
+    "plagiarism","qualified","rebellious","systematic","tenacious","unbearable","vigilance","wholesome","xenophile","youthfully",
+    "cacophony","deficiency","embroiled","fictitious","guillotine","hyperbole","indelible","jackhammer","kleptomaniac","lunatics"
+  ],
+  boss:[
+    "incomprehensible","uncomfortable","revolutionary","acknowledgement","straightforward",
+    "responsibility","circumstances","accomplishment","approximately","communication",
+    "encouragement","extraordinary","qualification","unfortunately","administration",
+    "comprehension","disappointment","establishment","opportunities","specification",
+    "antidisestablishmentarianism","pneumonoultramicroscopicsilicovolcanoconiosis",
+    "floccinaucinihilipilification","supercalifragilisticexpialidocious",
+    "hippopotomonstrosesquippedaliophobia","pseudopseudohypoparathyroidism",
+    "electroencephalographically","otorhinolaryngological","immunoelectrophoretically",
+    "chargoggagoggmanchauggagoggchaubunagungamaugg",
+    "dichlorodifluoromethane","psychophysicotherapeutics","thyroparathyroidectomized",
+    "spectrophotofluorometrically","hepaticocholangiocholecystenterostomies"
+  ]
 };
+
+// ── VOICE / TTS ────────────────────────────────────────────────────────
+let voiceEnabled = true;
+let isFirstWordThisGame = true;
+let speakTimeout = null;
+let currentUtterance = null;
+
+document.getElementById('voice-cb').addEventListener('change', function(){
+  voiceEnabled = this.checked;
+  if(!voiceEnabled) stopSpeech();
+});
+
+function stopSpeech(){
+  speechSynthesis.cancel();
+  currentUtterance = null;
+  setSpeakingDot(false);
+  clearTimeout(speakTimeout);
+}
+
+function setSpeakingDot(on){
+  const dot = document.getElementById('speaking-dot');
+  dot.classList.toggle('active', on);
+}
+
+function pickVoice(){
+  const voices = speechSynthesis.getVoices();
+  // Prefer a natural English voice — Google US English, Samantha, Daniel, Alex
+  const preferred = ['Google US English','Samantha','Alex','Daniel','Karen','Moira','Fiona'];
+  for(const name of preferred){
+    const v = voices.find(v => v.name === name);
+    if(v) return v;
+  }
+  // Fallback: any en-US
+  return voices.find(v => v.lang === 'en-US') ||
+         voices.find(v => v.lang.startsWith('en')) ||
+         voices[0] || null;
+}
+
+function speakWord(w){
+  if(!voiceEnabled) return;
+  stopSpeech();
+
+  const phrase = isFirstWordThisGame
+    ? `Spell the word. ${w}`
+    : `Alright, spell the word. ${w}`;
+  isFirstWordThisGame = false;
+
+  // Small delay so the UI renders first
+  speakTimeout = setTimeout(()=>{
+    const utter = new SpeechSynthesisUtterance(phrase);
+    utter.rate  = 0.88;
+    utter.pitch = 1.05;
+    utter.volume = 1;
+    const v = pickVoice();
+    if(v) utter.voice = v;
+    utter.onstart = () => setSpeakingDot(true);
+    utter.onend   = () => setSpeakingDot(false);
+    utter.onerror = () => setSpeakingDot(false);
+    currentUtterance = utter;
+    speechSynthesis.speak(utter);
+  }, 80);
+}
+
+// Pre-load voices (Chrome needs this)
+if(typeof speechSynthesis !== 'undefined'){
+  speechSynthesis.getVoices();
+  speechSynthesis.onvoiceschanged = () => speechSynthesis.getVoices();
+}
 
 // ── KEYBOARD ──────────────────────────────────────────────────────────
 const ROWS=[['Q','W','E','R','T','Y','U','I','O','P'],['A','S','D','F','G','H','J','K','L'],['Z','X','C','V','B','N','M']];
@@ -227,12 +357,11 @@ let bossBeaten=0,wordWpmList=[],lastWordWpm=0,eliminatedWord='';
 function getMultiplier(){return streak>=10?3:streak>=5?2:1;}
 function pool(s){return s<5?W.easy:s<12?W.med:s<22?W.hard:W.exp;}
 
-// Timer gets shorter the higher the streak, like Roblox Spelling Bee
 function timeFor(s,w,boss){
-  if(boss)return Math.max(5,Math.ceil(w.length*0.55));
-  const base=Math.max(10-Math.floor(s/4),4);
-  const streakPenalty=Math.min(Math.floor(streak/3),4); // -1s per 3-streak, cap -4s
-  return Math.max(base-streakPenalty+Math.ceil(w.length/5),3);
+  if(boss) return Math.max(6, Math.ceil(w.length * 0.65));
+  const base = Math.max(10 - Math.floor(s/4), 4);
+  const sp   = Math.min(Math.floor(streak/3), 4);
+  return Math.max(base - sp + Math.ceil(w.length/5), 3);
 }
 
 function pickWord(s,boss){
@@ -243,11 +372,17 @@ function pickWord(s,boss){
 function $id(i){return document.getElementById(i);}
 function show(id){$id(id).classList.remove('hidden');}
 function hide(id){$id(id).classList.add('hidden');}
-function showMenu(){hide('screen-game');hide('screen-over');show('screen-menu');$id('menu-hs').textContent=hs>0?'🏆 Best: '+hs+' pts':'';}
+function showMenu(){
+  stopSpeech();
+  hide('screen-game');hide('screen-over');show('screen-menu');
+  $id('menu-hs').textContent=hs>0?'🏆 Best: '+hs+' pts':'';
+}
 
 // ── COUNTDOWN ─────────────────────────────────────────────────────────
 function runCountdown(){
-  hide('screen-menu');hide('screen-over');hide('screen-game');$id('elim-banner').classList.remove('show');
+  stopSpeech();
+  hide('screen-menu');hide('screen-over');hide('screen-game');
+  $id('elim-banner').classList.remove('show');
   const cd=$id('countdown'),num=$id('cdown-num');
   cd.classList.remove('hidden');
   const steps=['3','2','1','GO!'];let i=0;
@@ -262,7 +397,8 @@ function runCountdown(){
 function startGame(){
   score=0;streak=0;bestStreak=0;wordsTyped=0;used=[];usedBoss=[];
   totChars=0;keysTotal=0;keysCorrect=0;wordWpmList=[];lastLen=0;bossBeaten=0;
-  ticking=false;isBoss=false;eliminatedWord='';
+  ticking=false;isBoss=false;eliminatedWord='';lastWordWpm=0;
+  isFirstWordThisGame = true;
   show('screen-game');updateHdr();updateCombo();updateFire();
   setNextWord(0,false);
   gStart=Date.now();wStart=Date.now();
@@ -276,6 +412,7 @@ function setNextWord(s,boss){
   const t=timeFor(s,word,boss);maxT=t;
   resetInp();renderWord();startTimer(t);
   $id('boss-label').style.opacity=boss?'1':'0';
+  speakWord(word);
   wStart=Date.now();
 }
 
@@ -287,7 +424,6 @@ function renderWord(){
     const c=!tp?(boss?'var(--danger)':'var(--text)'):tp.toLowerCase()===ch.toLowerCase()?'var(--correct)':'var(--danger)';
     return `<span style="color:${c};transition:color .08s">${ch.toUpperCase()}</span>`;
   }).join('');
-  // live per-word WPM
   if(v.length>0){
     const elapsed=(Date.now()-wStart)/60000;
     const live=Math.round((v.length/5)/elapsed);
@@ -300,7 +436,7 @@ function renderWord(){
 function resetInp(){
   const el=$id('game-input');
   el.value='';el.style.opacity='1';el.disabled=false;
-  el.classList.remove('err-shake');lastLen=0;
+  lastLen=0;
   $id('timer-wrap').classList.remove('pulse');
   $id('live-wpm').textContent='';
 }
@@ -325,7 +461,6 @@ function updateHdr(){
   $id('hdr-score').textContent=score;
   const s=$id('hdr-streak');s.textContent=streak;
   s.style.color=streak>=5?'var(--accent)':streak>=3?'var(--correct)':'var(--text)';
-  // show last word WPM in header strip
   $id('hdr-wpm-strip').textContent=lastWordWpm>0?lastWordWpm+' WPM':'— WPM';
 }
 
@@ -340,7 +475,6 @@ function updateCombo(){
   else{b.className='combo-badge';}
 }
 
-// ── PER-WORD WPM FLASH (Roblox-style) ────────────────────────────────
 function flashWpm(wpm){
   const el=$id('wpm-flash');
   el.textContent=wpm+' WPM';
@@ -349,7 +483,7 @@ function flashWpm(wpm){
   el.classList.add('pop');
 }
 
-// ── INPUT HANDLING ────────────────────────────────────────────────────
+// ── INPUT ────────────────────────────────────────────────────────────
 function onInput(){
   if(ticking)return;
   const el=$id('game-input'),v=el.value;
@@ -361,11 +495,7 @@ function onInput(){
   }
   lastLen=v.length;
   renderWord();
-
-  // Auto-submit when fully correct
-  if(v.toLowerCase()===word.toLowerCase()){
-    submitCorrect();
-  }
+  if(v.toLowerCase()===word.toLowerCase()) submitCorrect();
 }
 
 function onKey(e){
@@ -376,7 +506,6 @@ function onKey(e){
     if(v.toLowerCase()===word.toLowerCase()){
       submitCorrect();
     } else {
-      // WRONG → ELIMINATED (Roblox-style)
       eliminatedWord=v;
       clearInterval(tim);
       $id('timer-wrap').classList.remove('pulse');
@@ -387,8 +516,8 @@ function onKey(e){
 
 function submitCorrect(){
   clearInterval(tim);$id('timer-wrap').classList.remove('pulse');
+  stopSpeech();
 
-  // Per-word WPM (Roblox Spelling Bee formula: chars/5 / minutes)
   const ms=Date.now()-wStart;
   const wordWpm=Math.round((word.length/5)/(ms/60000));
   lastWordWpm=wordWpm;
@@ -443,22 +572,20 @@ function doBurst(){
   }
 }
 
-// ── GAME OVER ──────────────────────────────────────────────────────────
+// ── GAME OVER ─────────────────────────────────────────────────────────
 function endGame(reason){
-  // Show eliminated overlay briefly if wrong answer
+  stopSpeech();
   if(reason==='wrong'){
     $id('elim-msg').textContent='❌ ELIMINATED';
     $id('elim-word').textContent='you typed: "'+eliminatedWord+'"';
     $id('elim-correct').textContent='correct: '+word.toUpperCase();
-    $id('elim-banner').classList.add('show');
-    setTimeout(()=>{$id('elim-banner').classList.remove('show');showOver();},1600);
   } else {
     $id('elim-msg').textContent="⏱ TIME'S UP";
     $id('elim-word').textContent='the word was: '+word.toUpperCase();
     $id('elim-correct').textContent='';
-    $id('elim-banner').classList.add('show');
-    setTimeout(()=>{$id('elim-banner').classList.remove('show');showOver();},1400);
   }
+  $id('elim-banner').classList.add('show');
+  setTimeout(()=>{$id('elim-banner').classList.remove('show');showOver();},1600);
 }
 
 function showOver(){
