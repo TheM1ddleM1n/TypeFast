@@ -1,4 +1,4 @@
-# ⌨️ TYPEFAST
+# ⌨️ Typefast
 **Think fast. Type faster.**
 
 A high-octane, minimalist typing challenge where speed and accuracy are your only lifelines. Modeled after Roblox's Spelling Bee — with a live announcer, per-word WPM tracking, and boss words that will break you.
