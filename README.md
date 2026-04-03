@@ -1,7 +1,7 @@
 # ⌨️ Typefast
 **Think fast. Type faster.**
 
-A high-octane, minimalist typing challenge where speed and accuracy are your only lifelines. Modeled after Roblox's Spelling Bee — with a live announcer, per-word WPM tracking, and boss words that will break you.
+A high-octane, minimalist typing challenge where speed and accuracy are your only lifelines. Modeled after Roblox's Spelling Bee — with a live announcer, per-word WPM tracking, and boss words!
 
 [**PLAY NOW!**](https://them1ddlem1n.github.io/TypeFast/)
 
@@ -13,25 +13,25 @@ A high-octane, minimalist typing challenge where speed and accuracy are your onl
 - **Auto-Submit:** No Enter key needed — the game validates the instant you finish.
 - **Manual Submit:** Press Enter to submit early (wrong answer = instant elimination).
 - **Survive the Scale:** Words get longer and harder, and the timer shrinks as your streak grows.
-- **Game Over:** Time runs out or you spell a word wrong — you're eliminated.
+- **Game Over:** Time runs out or you spell a word wrong — you're eliminated. 
 
 ---
 
-## ⚡ Key Features
+## Key Features
 
-### 🔊 Announcer Voice
+### Announcer Voice
 - Every word is read aloud using the Web Speech API — no libraries, no downloads needed.
 - First word: *"Spell the word. [word]"* — subsequent words: *"Alright, spell the word. [word]"*
 - Automatically selects the best available voice on your device.
 - Toggle on/off from the main menu with a live speaking indicator.
 
-### 📊 Roblox-Style WPM
+### Roblox-Style WPM
 - WPM is calculated **per word**: `(chars / 5) / minutes` — measuring exactly how fast you typed *that* word.
 - Flashes big in gold above the word after every correct submission.
 - Live WPM updates as you type the current word.
 - End screen shows your **Best WPM** and **Average WPM** across the whole run.
 
-### 🔥 Adaptive Difficulty
+### Adaptive Difficulty
 - **5 difficulty tiers:** Easy → Medium → Hard → Expert → Boss
 - **Streak pressure:** Every 3 consecutive correct words shrinks the timer by 1 second (up to −4s).
 - **Combo multipliers:** 5+ streak = 2× points · 10+ streak = 3× points with fire indicators.
@@ -62,7 +62,5 @@ Includes some of the most unhinged words in the English language:
 
 ## 📈 Want to Improve Your Score?
 Practice finger placement on [TypingClub](https://www.typingclub.com) or benchmark your raw speed on [Monkeytype](https://monkeytype.com).
-
 ---
-
 #### Developed by TheM1ddleM1n
